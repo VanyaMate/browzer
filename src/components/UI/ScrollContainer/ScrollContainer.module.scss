@@ -1,0 +1,30 @@
+@import "../../../utils/colors";
+
+$scrollWidth: 4;
+
+.scrollContainer {
+    position: relative;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        width: #{$scrollWidth}px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $darkGray;
+        border-radius: calc(#{$scrollWidth}px / 2);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $blue;
+        border-radius: calc(#{$scrollWidth}px / 2);
+    }
+
+    & .itemsContainer {
+        padding-right: calc(5px);
+
+        &.noScroll {
+            padding-right: 0px;
+        }
+    }
+}

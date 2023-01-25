@@ -1,0 +1,11 @@
+@import "../../utils/sizes";
+@import "../../utils/colors";
+
+.header {
+    height: $headerSize;
+    background: $darkGray;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}

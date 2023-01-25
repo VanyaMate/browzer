@@ -1,0 +1,26 @@
+@import "../../../utils/sizes";
+@import "../../../utils/colors";
+
+.input {
+    width: 100%;
+    padding: $commonMargin;
+    outline: none;
+    border: 0px solid transparent;
+    border-bottom: 1px solid transparent;
+    background-color: $darkGray;
+    color: $white;
+    transition: .1s;
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:focus  {
+        transition: background-color 600000s 0s, color 600000s 0s;
+    }
+
+    &.active {
+        border-bottom: 1px solid $blue;
+    }
+
+    &.error {
+        border-bottom: 1px solid $orange;
+    }
+}

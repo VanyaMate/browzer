@@ -1,0 +1,15 @@
+@import "../../utils/sizes";
+
+.contentBrowser {
+    width: 100vw;
+    height: calc(100vh - #{$headerSize});
+    margin-top: $headerSize;
+    overflow: hidden;
+
+    & .scrollable {
+        display: flex;
+        height: inherit;
+        justify-content: center;
+        transition: .2s;
+    }
+}

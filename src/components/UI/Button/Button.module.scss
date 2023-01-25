@@ -1,0 +1,19 @@
+@import "../../../utils/sizes";
+@import "../../../utils/colors";
+
+.button {
+    padding: $commonMargin;
+    background: $darkGray;
+    color: $liteGray;
+    outline: none;
+    border: none;
+    transition: .1s;
+    pointer-events: none;
+
+    &.active {
+        pointer-events: auto;
+        color: $white;
+        background: $blue;
+        cursor: pointer;
+    }
+}

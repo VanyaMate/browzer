@@ -1,0 +1,29 @@
+@import "../../../../utils/colors";
+@import "../../../../utils/sizes";
+
+.selectArea {
+    display: flex;
+    justify-content: left;
+    height: 30px;
+    width: 100%;
+    margin-bottom: $commonMargin;
+}
+
+.selectButton {
+    display: flex;
+    margin-right: $commonMargin;
+    background: $darkGray;
+    width: 100px;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+    color: $liteGray;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .1s;
+
+    &.active {
+        background: $blue;
+        color: $white;
+    }
+}

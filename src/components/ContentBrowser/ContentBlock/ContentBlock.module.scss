@@ -1,0 +1,20 @@
+@import "../../../utils/sizes";
+@import "../../../utils/colors";
+
+.contentBlock {
+    display: flex;
+    width: $contentBlockWidth;
+    min-width: $contentBlockWidth;
+    margin: $commonMargin;
+    //background: $liteGray;
+
+    margin-left: 0px;
+
+    &:last-child {
+        margin-right: 0px;
+    }
+
+    & .contentBlockContainer {
+        width: 100%;
+    }
+}

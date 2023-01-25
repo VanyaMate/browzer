@@ -1,0 +1,29 @@
+@import "../../../utils/colors";
+@import "../../../utils/sizes";
+
+.messageItem {
+    margin-bottom: $commonMargin;
+    display: flex;
+    width: 80%;
+    font-size: 14px;
+    flex-direction: column;
+
+    & .date {
+        font-size: 12px;
+        color: $liteGray;
+    }
+
+    & .text {
+        background: $darkGray;
+        color: $white;
+        padding: $commonMargin;
+    }
+
+    &.my {
+        align-self: end;
+
+        & .date {
+            text-align: right;
+        }
+    }
+}

@@ -1,0 +1,9 @@
+@import "../../utils/colors";
+@import "../../utils/sizes";
+
+.registrationForm {
+    & .border {
+        margin-bottom: $commonMargin;
+        border-bottom: 5px dotted $darkGray;
+    }
+}

@@ -1,0 +1,32 @@
+@import "../../utils/sizes";
+@import "../../utils/colors";
+
+.loginPage {
+    margin: auto;
+    width: calc(#{$contentBlockWidth} * 2);
+    display: flex;
+
+    & > * {
+        width: calc(#{$contentBlockWidth} * .9);
+        height: calc(100vh - 10px);
+        margin-top: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 0px calc(#{$commonMargin} + #{$contentBlockWidth} * .05);
+
+        & > * {
+            width: 100%;
+            margin-bottom: $commonMargin;
+        }
+
+        & h2 {
+            text-align: left;
+            font-size: 20px;
+            color: $blue;
+            padding-bottom: $commonMargin;
+            border-bottom: 5px dotted $darkGray;
+        }
+    }
+}

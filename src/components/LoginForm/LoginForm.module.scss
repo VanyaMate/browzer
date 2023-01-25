@@ -1,0 +1,13 @@
+@import "../../utils/colors";
+@import "../../utils/sizes";
+
+.loginForm {
+    & .border {
+        margin-bottom: $commonMargin;
+        border-bottom: 5px dotted $darkGray;
+    }
+
+    &.active {
+        border: 1px solid $blue;
+    }
+}
