@@ -1,15 +1,17 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import css from './LoginForm.module.scss';
 import Input from "../UI/Input/Input";
 import Button from "../UI/Button/Button";
 import {checkLogin, checkPassword} from "../../utils/Checker";
 import {UserData} from "../../App";
+import {serverUrl, sessionStorageLogin, sessionStorageSessionId} from "../../utils/conts";
 
 const LoginForm = () => {
     const userData = useContext(UserData);
     const [login, setLogin] = useState({ value: '', confirmed: false });
     const [password, setPassword] = useState({ value: '', confirmed: false });
     const [confirmed, setConfirmed] = useState(false);
+    const logInButton = useRef();
 
     const loginInputHandler = function ({ target }) {
         setLogin({
@@ -26,7 +28,40 @@ const LoginForm = () => {
     }
 
     const logIn = function () {
-        userData.setUser({login, password});
+        logInButton.current.classList.add('sending');
+
+        const sendData = {
+            login: login.value,
+            password: password.value
+        };
+
+        fetch(`${ serverUrl }/api/login/pass`, {
+            method: 'post',
+            body: JSON.stringify(sendData),
+        }).then(async (response) => {
+            const body = await response.text();
+            const data = JSON.parse(body);
+
+            logInButton.current.classList.remove('sending');
+
+            if (data.sessionId !== undefined) {
+                sessionStorage.setItem(sessionStorageLogin, login.value);
+                sessionStorage.setItem(sessionStorageSessionId, data.sessionId);
+
+                userData.setUser({...sendData, ...{password: null, sessionId: data.sessionId}});
+                return null;
+            }
+
+            setLogin({
+                value: login.value,
+                confirmed: false
+            })
+
+            setPassword({
+                value: password.value,
+                confirmed: false
+            })
+        });
     }
 
     useEffect(() => {
@@ -41,7 +76,7 @@ const LoginForm = () => {
             <Input validation={login.confirmed} placeholder={'Логин'} type={'text'} value={login.value} onInput={loginInputHandler}/>
             <Input validation={password.confirmed} placeholder={'Пароль'} type={'password'} value={password.value} onInput={passwordInputHandler}/>
             <div className={css.border}></div>
-            <Button validation={confirmed} onClick={logIn}>Войти</Button>
+            <Button reff={logInButton} validation={confirmed} onClick={logIn}>Войти</Button>
         </div>
     );
 };

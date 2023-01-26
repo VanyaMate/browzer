@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import css from './RegistrationForm.module.scss';
 import Input from "../UI/Input/Input";
 import Button from "../UI/Button/Button";
 import {useContext, useEffect, useState} from "react";
 import {UserData} from "../../App";
 import {checkEmail, checkLogin, checkName, checkPassword} from "../../utils/Checker";
+import {serverUrl, sessionStorageLogin, sessionStorageSessionId} from "../../utils/conts";
 
 const RegistrationForm = () => {
     const userData = useContext(UserData);
@@ -15,6 +16,7 @@ const RegistrationForm = () => {
     const [lastName, setLastName] = useState({ value: '', confirmed: false });
     const [email, setEmail] = useState({ value: '', confirmed: false });
     const [confirmed, setConfirmed] = useState(false);
+    const registrationButton = useRef();
 
     const loginInputHandler = function ({ target }) {
         setLogin({
@@ -64,7 +66,36 @@ const RegistrationForm = () => {
     }
 
     const registration = function () {
-        userData.setUser({login, password});
+        registrationButton.current.classList.add('sending');
+
+        const sendData = {
+            login: login.value,
+            password: password.value,
+            email: email.value,
+            personalInfo: {
+                firstName: firstName.value,
+                lastName: lastName.value
+            }
+        };
+
+        fetch(`${ serverUrl }/api/users`, {
+            method: 'post',
+            body: JSON.stringify(sendData)
+        }).then((response) => {
+            registrationButton.current.classList.remove('sending');
+
+            return response.text();
+        }).then((body) => {
+            const data = JSON.parse(body);
+            console.log(data);
+
+            if (data.sessionId !== undefined) {
+                sessionStorage.setItem(sessionStorageLogin, login.value);
+                sessionStorage.setItem(sessionStorageSessionId, data.sessionId);
+
+                userData.setUser({...sendData, ...{password: null, sessionId: data.sessionId}});
+            }
+        });
     }
 
     useEffect(() => {
@@ -85,7 +116,7 @@ const RegistrationForm = () => {
             <div className={css.border}></div>
             <Input validation={email.confirmed} placeholder={'Почта'} type={'email'} value={email.value} onInput={emailInputHandler}/>
             <div className={css.border}></div>
-            <Button validation={confirmed} onClick={registration}>Регистрация</Button>
+            <Button reff={registrationButton} validation={confirmed} onClick={registration}>Регистрация</Button>
         </div>
     );
 };

@@ -9,8 +9,8 @@ const loginApi = require('./api/loginApi.js');
 
 app.use(cors({ origin: true }));
 admin.initializeApp({
-   credential: admin.credential.cert(serviceAccount),
-   databaseURL: "https://socialbrowsr-cfe4b-default-rtdb.europe-west1.firebasedatabase.app"
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://socialbrowsr-cfe4b-default-rtdb.europe-west1.firebasedatabase.app"
 });
 
 const db = admin.firestore();

@@ -15,15 +15,17 @@ const setApi = function (app, db) {
     }
 
     // Проверить логин/пароль пользователя и получить sessionId
-    app.post('/api/login', (req, res) => {
+    app.post('/api/login/pass', (req, res) => {
         (async () => {
             try {
-                if (validateData(req.body).error) {
+                const data = typeof req.body === 'string' ? JSON.parse(req.body || "{}") : req.body;
+
+                if (validateData(data).error) {
                     res.status(400).send({message: 'bad login/password'});
                     return false;
                 }
 
-                const doc = db.collection('users').doc(req.body.login);
+                const doc = db.collection('users').doc(data.login);
                 const user = await doc.get();
                 const userData = user.data();
 
@@ -32,9 +34,9 @@ const setApi = function (app, db) {
                     return false;
                 }
 
-                await bcrypt.compare(req.body.password, userData.password, (err, result) => {
+                await bcrypt.compare(data.password, userData.password, (err, result) => {
                     if (result) {
-                        res.status(200).send(userData.sessionId);
+                        res.status(200).send({sessionId: userData.sessionId, success: true});
                     } else {
                         res.status(400).send({message: 'bad login/password'});
                     }
@@ -47,15 +49,17 @@ const setApi = function (app, db) {
     })
 
     // Проверить актуальность логин/sessionId пользователя
-    app.get('/api/login', (req, res) => {
+    app.post('/api/login/id', (req, res) => {
         (async () => {
             try {
-                if (checker.checkLogin(req.body.login)) {
-                    const doc = db.collection('users').doc(req.body.login);
+                const data = typeof req.body === 'string' ? JSON.parse(req.body || "{}") : req.body;
+
+                if (checker.checkLogin(data.login)) {
+                    const doc = db.collection('users').doc(data.login);
                     const user = await doc.get();
                     const userData = user.data();
 
-                    if (userData.sessionId === req.body.sessionId) {
+                    if (userData.sessionId === data.sessionId) {
                         res.status(200).send({success: true});
                         return false;
                     } else {

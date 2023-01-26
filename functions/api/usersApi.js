@@ -42,45 +42,42 @@ const setApi = function (app, db) {
     app.post('/api/users', (req, res) => {
         (async () => {
             try {
-                const validStatus = validationUserData(req.body);
+                const data = typeof req.body === 'string' ? JSON.parse(req.body || "{}") : req.body;
+                const validStatus = validationUserData(data);
 
                 if (!validStatus.error) {
                     let sessionId = null;
                     let hashPassword = null;
 
-                    await bcrypt.hash(req.body.login, 10).then((h) => {
-                        sessionId = h
+                    await bcrypt.hash(data.login, 10).then((h) => {
+                        sessionId = h;
                     });
-                    await bcrypt.hash(req.body.password, 10).then((h) => {
-                        hashPassword = h
+                    await bcrypt.hash(data.password, 10).then((h) => {
+                        hashPassword = h;
                     });
 
-                    console.log('hashPassword: ', hashPassword);
-                    console.log('sessionId: ', sessionId);
-
-                    await
-                        db
-                            .collection('users')
-                            .doc('/' + req.body.login + '/')
-                            .create({
-                                login: req.body.login,
-                                password: hashPassword,
-                                personalInfo: {
-                                    firstName: {
-                                        value: req.body.personalInfo.firstName,
-                                        hidden: true
-                                    },
-                                    lastName: {
-                                        value: req.body.personalInfo.lastName,
-                                        hidden: true
-                                    }
+                    await db
+                        .collection('users')
+                        .doc('/' + data.login + '/')
+                        .create({
+                            login: data.login,
+                            password: hashPassword,
+                            personalInfo: {
+                                firstName: {
+                                    value: data.personalInfo.firstName,
+                                    hidden: true
                                 },
-                                avatar: './photo.jpg',
-                                email: req.body.email,
-                                sessionId: sessionId,
-                            })
+                                lastName: {
+                                    value: data.personalInfo.lastName,
+                                    hidden: true
+                                }
+                            },
+                            avatar: './photo.jpg',
+                            email: data.email,
+                            sessionId: sessionId,
+                        })
 
-                    return res.status(200).send(sessionId);
+                    return res.status(200).send({sessionId, success: true});
                 } else {
                     return res.status(validStatus.code).send(validStatus.message);
                 }
@@ -136,11 +133,13 @@ const setApi = function (app, db) {
     // Изменение информации пользователя
     app.put('/api/user/:login', (req, res) => {
         (async () => {
+            const data = typeof req.body === 'string' ? JSON.parse(req.body || "{}") : req.body;
+
             try {
                 const document = db.collection('users').doc(req.params.login);
 
                 await document.update({
-                    [req.body.changeParamName]: req.body.changeParamValue
+                    [data.changeParamName]: data.changeParamValue
                 });
 
                 return res.status(200).send({success: true});
