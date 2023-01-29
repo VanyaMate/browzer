@@ -1,112 +1,50 @@
-const {checker} = require('../utils/checker');
+const {checker} = require('../utils/checkerUserData');
 const bcrypt = require('bcrypt');
+const {requestHandler, getPublicUserData, getPrivateUserData, checkLoginExist} = require('../utils/requestMethods').requestMethods;
 
 const setApi = function (app, db) {
-    const getPublicData = function (userData) {
-        return {
-            login: userData.login,
-            personalInfo: {
-                firstName: (!userData.personalInfo.firstName.hidden && userData.personalInfo.firstName.value) || '',
-                lastName: (!userData.personalInfo.lastName.hidden && userData.personalInfo.lastName.value) || '',
-            },
-            lastTimeOnline: userData.lastTimeOnline || 0,
-            avatar: './photo.jpg'
-        };
-    }
-    const getUserData = function (userData) {
-        return {
-            ...userData,
-            ...{
-                password: null,
-                sessionId: null
-            }
-        };
-    }
-    const getRequestData = function (requestBody) {
-        return typeof requestBody === 'string' ? JSON.parse(requestBody || "{}") : requestBody;
-    }
-    const checkLoginExist = async function (login) {
-        return (await db.collection('users').doc(login).get()).data();
-    }
-    const validationUserData = function (userData) {
+    const validateUserData = function (userData) {
         if (!checker.checkLogin(userData.login)) {
-            return {error: true, message: 'bad login', code: 400};
+            return {error: true, message: 'bad login'};
         }
 
         if (!checker.checkPassword(userData.password)) {
-            return {error: true, message: 'bad password', code: 400};
+            return {error: true, message: 'bad password'};
         }
 
         if (!checker.checkEmail(userData.email)) {
-            return {error: true, message: 'bad email', code: 400};
+            return {error: true, message: 'bad email'};
         }
 
         if (!checker.checkName(userData.personalInfo.firstName)) {
-            return {error: true, message: 'bad firstName', code: 400};
+            return {error: true, message: 'bad firstName'};
         }
 
         if (!checker.checkName(userData.personalInfo.lastName)) {
-            return {error: true, message: 'bad lastName', code: 400};
+            return {error: true, message: 'bad lastName'};
         }
 
-        return {error: false, data: {}, code: 200};
+        return {error: false, data: {}};
     }
-    const validationRequestIP = function (request) {
-        return true;
-    }
-    const validateRequest = function (request) {
-        const data = getRequestData(request.body);
-        const validRequestIP = validationRequestIP(request);
-
-        if (validRequestIP.error) {
-            return {error: true, data: {message: 'bad request'}};
-        } else {
-            return {error: false, data};
-        }
-    }
-    const validationChangeUserData = function (changeUserData) {
-        switch (changeUserData.name) {
+    const validateChangeUserData = function (changedUserData) {
+        switch (changedUserData.name) {
             case 'personalInfo':
                 if (
-                    checker.checkName(changeUserData.value.firstName) &&
-                    checker.checkName(changeUserData.value.lastName)
+                    checker.checkName(changedUserData.value.firstName) &&
+                    checker.checkName(changedUserData.value.lastName)
                 ) {
                     return true;
                 }
                 break;
             default:
                 return false;
-                break;
-        }
-    }
-
-    const requestHandler = function (req, res, callback) {
-        try {
-            const request = validateRequest(req);
-
-            if (request.error) {
-                res.status(request.code).send({
-                    error: true,
-                    data: {
-                        message: request.data.message
-                    },
-                });
-            } else {
-                callback(request);
-            }
-        }
-        catch (error) {
-            res.status(500).send({
-                error: true,
-                data: error,
-            });
         }
     }
 
     // Создать пользователя
     app.post('/api/users/create', (req, res) => {
         requestHandler(req, res, async (request) => {
-            const validUserData = validationUserData(request.data);
+            const validUserData = validateUserData(request.data);
 
             if (validUserData.error) {
                 res.status(200).send({
@@ -164,7 +102,7 @@ const setApi = function (app, db) {
                     error: false,
                     data: {
                         sessionId,
-                        userData: getUserData(userData)
+                        userData: getPrivateUserData(userData)
                     },
                 });
             }
@@ -188,7 +126,7 @@ const setApi = function (app, db) {
             } else {
                 res.status(200).send({
                     error: false,
-                    data: getPublicData(userData)
+                    data: getPublicUserData(userData)
                 });
             }
         });
@@ -202,7 +140,7 @@ const setApi = function (app, db) {
                 .startAt(request.data.login)
                 .limit(request.data.limit);
             const getUsers = await query.get();
-            const users = getUsers.docs.map((user) => getPublicData(user.data()));
+            const users = getUsers.docs.map((user) => getPublicUserData(user.data()));
 
             res.status(200).send({
                 error: false,
@@ -214,7 +152,7 @@ const setApi = function (app, db) {
     // Изменение информации пользователя
     app.post('/api/users/change', (req, res) => {
         requestHandler(req, res, async (request) => {
-            let valid = validationChangeUserData(request.data);
+            let valid = validateChangeUserData(request.data);
 
             if (valid && await checkLoginExist(request.data.login)) {
                 const document = db.collection('users').doc(request.data.login);
@@ -256,7 +194,7 @@ const setApi = function (app, db) {
                     }
                 });
             } else {
-                return res.status(200).send({
+                res.status(200).send({
                     error: true,
                     data: {
                         message: 'bad login',

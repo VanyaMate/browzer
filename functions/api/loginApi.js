@@ -1,14 +1,15 @@
 const bcrypt = require("bcrypt");
-const {checker} = require("../utils/checker");
-const setApi = function (app, db) {
+const {checker} = require("../utils/checkerUserData");
+const {requestHandler, getPrivateUserData} = require('../utils/requestMethods').requestMethods;
 
-    const validateData = function (data) {
+const setApi = function (app, db) {
+    const validateUserData = function (data) {
         if (!checker.checkLogin(data.login)) {
-            return {error: true, code: 400, message: 'bad login'};
+            return {error: true, message: 'bad login'};
         }
 
         if (!checker.checkPassword(data.password)) {
-            return {error: true, code: 400, message: 'bad password'};
+            return {error: true, message: 'bad password'};
         }
 
         return {error: false, code: 200};
@@ -16,65 +17,99 @@ const setApi = function (app, db) {
 
     // Проверить логин/пароль пользователя и получить sessionId
     app.post('/api/login/pass', (req, res) => {
-        (async () => {
-            try {
-                const data = typeof req.body === 'string' ? JSON.parse(req.body || "{}") : req.body;
+        requestHandler(req, res, async (request) => {
+            const valid = validateUserData(request.data);
 
-                if (validateData(data).error) {
-                    res.status(400).send({message: 'bad login/password'});
-                    return false;
-                }
-
-                const doc = db.collection('users').doc(data.login);
-                const user = await doc.get();
-                const userData = user.data();
-
-                if (userData === undefined) {
-                    res.status(400).send({message: 'bad login/password'});
-                    return false;
-                }
-
-                await bcrypt.compare(data.password, userData.password, (err, result) => {
-                    if (result) {
-                        res.status(200).send({sessionId: userData.sessionId, success: true});
-                    } else {
-                        res.status(400).send({message: 'bad login/password'});
+            if (valid.error) {
+                res.status(400).send({
+                    error: true,
+                    data: {
+                        message: valid.message,
                     }
-                })
-            } catch (error) {
-                console.log(error);
-                res.status(500).send(error);
+                });
+                return;
             }
-        })();
+
+            const doc = db.collection('users').doc(request.data.login);
+            const user = await doc.get();
+            const userData = user.data();
+
+            if (userData === undefined) {
+                res.status(200).send({
+                    error: true,
+                    data: {
+                        message: 'bad login/password'
+                    },
+                });
+                return;
+            }
+
+            await bcrypt.compare(request.data.password, userData.password, (err, result) => {
+                if (result) {
+                    res.status(200).send({
+                        error: false,
+                        data: {
+                            sessionId: userData.sessionId,
+                            userData: getPrivateUserData(userData)
+                        }
+                    });
+                } else {
+                    res.status(200).send({
+                        error: true,
+                        data: {
+                            message: 'bad login/password'
+                        }
+                    });
+                }
+            })
+        });
     })
 
     // Проверить актуальность логин/sessionId пользователя
     app.post('/api/login/id', (req, res) => {
-        (async () => {
-            try {
-                const data = typeof req.body === 'string' ? JSON.parse(req.body || "{}") : req.body;
+        requestHandler(req, res, async (request) => {
+            if (checker.checkLogin(request.data.login)) {
+                const doc = db.collection('users').doc(request.data.login);
+                const user = await doc.get();
+                const userData = user.data();
 
-                if (checker.checkLogin(data.login)) {
-                    const doc = db.collection('users').doc(data.login);
-                    const user = await doc.get();
-                    const userData = user.data();
-
-                    if (userData.sessionId === data.sessionId) {
-                        res.status(200).send({success: true});
-                        return false;
-                    } else {
-                        res.status(400).send({message: 'bad login/sessionId'});
-                        return false;
-                    }
+                if (userData === undefined) {
+                    res.status(200).send({
+                        error: true,
+                        data: {
+                            message: 'bad login/sessionId'
+                        }
+                    });
+                    return;
                 }
 
-                res.status(400).send({message: 'bad login/sessionId'});
-                return false;
-            } catch (error) {
-                console.log(error);
-                res.status(500).send(error);
+                if (userData.sessionId === request.data.sessionId) {
+                    res.status(200).send({
+                        error: false,
+                        data: {
+                            sessionId: userData.sessionId,
+                            userData: getPrivateUserData(userData)
+                        }
+                    });
+                    return;
+                } else {
+                    res.status(200).send({
+                        error: true,
+                        data: {
+                            message: 'bad login/sessionId'
+                        }
+                    });
+                    return;
+                }
             }
-        })();
+
+            res.status(200).send({
+                error: true,
+                data: {
+                    message: 'bad login/sessionId'
+                }
+            });
+        });
     })
 }
 
