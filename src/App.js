@@ -5,7 +5,7 @@ import Header from "./components/Header/Header";
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import LoginPage from "./components/LoginPage/LoginPage";
-import {serverUrl, sessionStorageLogin, sessionStorageSessionId} from "./utils/conts";
+import {serverUrl, sessionStorageUserData} from "./utils/conts";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA-1tMgD7SbE0O2TDeR39lPVwtB75DtI6Q",
@@ -17,30 +17,28 @@ const firebaseConfig = {
 };
 
 export const UserData = createContext(null);
-const savedLogin = sessionStorage.getItem(sessionStorageLogin);
-const savedSessionId = sessionStorage.getItem(sessionStorageSessionId);
+const savedUserData = sessionStorage.getItem(sessionStorageUserData);
 
 const App = () => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(false);
+    let loading = false;
 
     const savedDataExist = function () {
-        return savedLogin !== null && savedSessionId !== null;
+        return savedUserData !== null;
     }
 
-    const checkUserData = async function (login, sessionId) {
+    const checkUserData = async function (userData) {
         await fetch(`${serverUrl}/api/login/id`, {
             method: 'post',
             body: JSON.stringify({
-                login: savedLogin,
-                sessionId: savedSessionId
+                login: userData.userData.login,
+                sessionId: userData.sessionId
             })
         }).then(async (response) => {
             const body = await response.text();
             const data = JSON.parse(body);
-            if (data.success) {
-                setUser({login: savedLogin, sessionId: savedSessionId});
-                return true;
+            if (data.error === false) {
+                return data.data;
             }
             return false;
         }).catch((error) => {
@@ -52,9 +50,13 @@ const App = () => {
     useEffect(() => {
         if (loading) return;
         if (savedDataExist()) {
-            setLoading(true);
-            checkUserData(savedLogin, savedSessionId).then((status) => {
-                setLoading(false);
+            const userData = JSON.parse(savedUserData);
+            loading = true;
+            checkUserData(userData).then((data) => {
+                setUser(data || null);
+                loading = false;
+            }).catch(() => {
+                loading = false;
             });
         }
     }, [])

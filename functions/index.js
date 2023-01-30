@@ -6,6 +6,7 @@ const app = express();
 const serviceAccount = require("./perm.json");
 const usersApi = require('./api/usersApi.js');
 const loginApi = require('./api/loginApi.js');
+const messagesApi = require('./api/messagesApi.js');
 
 app.use(cors({ origin: true }));
 admin.initializeApp({
@@ -17,5 +18,6 @@ const db = admin.firestore();
 
 usersApi.setApi(app, db);
 loginApi.setApi(app, db);
+messagesApi.setApi(app, db);
 
 exports.app = functions.https.onRequest(app);

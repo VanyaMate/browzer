@@ -1,6 +1,7 @@
 const {checker} = require('../utils/checkerUserData');
 const bcrypt = require('bcrypt');
 const {requestHandler, getPublicUserData, getPrivateUserData, checkLoginExist} = require('../utils/requestMethods').requestMethods;
+const {usersApi} = require('./api_list').list;
 
 const setApi = function (app, db) {
     const validateUserData = function (userData) {
@@ -42,7 +43,7 @@ const setApi = function (app, db) {
     }
 
     // Создать пользователя
-    app.post('/api/users/create', (req, res) => {
+    app.post(usersApi.create.url, (req, res) => {
         requestHandler(req, res, async (request) => {
             const validUserData = validateUserData(request.data);
 
@@ -55,7 +56,7 @@ const setApi = function (app, db) {
                 });
                 return;
             } else {
-                if (await checkLoginExist(request.data.login)) {
+                if (await checkLoginExist(request.data.login, db)) {
                     res.status(200).send({
                         error: true,
                         data: {
@@ -88,6 +89,8 @@ const setApi = function (app, db) {
                             hidden: true
                         },
                     },
+                    conversations: [],
+                    friends: [],
                     avatar: './photo.jpg',
                     email: request.data.email,
                     sessionId: sessionId,
@@ -110,7 +113,7 @@ const setApi = function (app, db) {
     });
 
     // Получить информацию об одном пользователе по логину
-    app.post('/api/users/getUserByLogin', (req, res) => {
+    app.post(usersApi.getUserByLogin.url, (req, res) => {
         requestHandler(req, res, async (request) => {
             const query = db.collection('users').doc(request.data.login);
             const user = await query.get();
@@ -133,7 +136,7 @@ const setApi = function (app, db) {
     });
 
     // Получить пользователей по совпадению в начале логина
-    app.post('/api/users/getListByLogin', (req, res) => {
+    app.post(usersApi.getListByLogin.url, (req, res) => {
         requestHandler(req, res, async (request) => {
             const query = db.collection('users')
                 .orderBy('login')
@@ -150,11 +153,11 @@ const setApi = function (app, db) {
     });
 
     // Изменение информации пользователя
-    app.post('/api/users/change', (req, res) => {
+    app.post(usersApi.change.url, (req, res) => {
         requestHandler(req, res, async (request) => {
             let valid = validateChangeUserData(request.data);
 
-            if (valid && await checkLoginExist(request.data.login)) {
+            if (valid && await checkLoginExist(request.data.login, db)) {
                 const document = db.collection('users').doc(request.data.login);
 
                 await document.update({
@@ -179,9 +182,9 @@ const setApi = function (app, db) {
     });
 
     // Удаление пользователя
-    app.post('/api/users/delete', (req, res) => {
+    app.post(usersApi.delete.url, (req, res) => {
         requestHandler(req, res, async (request) => {
-            if (await checkLoginExist(request.data.login)) {
+            if (await checkLoginExist(request.data.login, db)) {
                 const document = db.collection('users').doc(request.data.login);
                 await document.delete();
 

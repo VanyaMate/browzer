@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const {checker} = require("../utils/checkerUserData");
 const {requestHandler, getPrivateUserData} = require('../utils/requestMethods').requestMethods;
+const {loginApi} = require('./api_list').list;
 
 const setApi = function (app, db) {
     const validateUserData = function (data) {
@@ -16,12 +17,12 @@ const setApi = function (app, db) {
     }
 
     // Проверить логин/пароль пользователя и получить sessionId
-    app.post('/api/login/pass', (req, res) => {
+    app.post(loginApi.pass.url, (req, res) => {
         requestHandler(req, res, async (request) => {
             const valid = validateUserData(request.data);
 
             if (valid.error) {
-                res.status(400).send({
+                res.status(200).send({
                     error: true,
                     data: {
                         message: valid.message,
@@ -66,7 +67,7 @@ const setApi = function (app, db) {
     })
 
     // Проверить актуальность логин/sessionId пользователя
-    app.post('/api/login/id', (req, res) => {
+    app.post(loginApi.id.url, (req, res) => {
         requestHandler(req, res, async (request) => {
             if (checker.checkLogin(request.data.login)) {
                 const doc = db.collection('users').doc(request.data.login);

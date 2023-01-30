@@ -2,7 +2,7 @@ import React, {useContext, useState} from 'react';
 import css from './Header.module.scss';
 import {UserData} from "../../App";
 import Button from "../UI/Button/Button";
-import {sessionStorageLogin, sessionStorageSessionId} from "../../utils/conts";
+import {sessionStorageUserData} from "../../utils/conts";
 
 const Header = () => {
     const userData = useContext(UserData);
@@ -10,13 +10,12 @@ const Header = () => {
 
     const signOut = function () {
         userData.setUser(null);
-        sessionStorage.removeItem(sessionStorageLogin);
-        sessionStorage.removeItem(sessionStorageSessionId);
+        sessionStorage.removeItem(sessionStorageUserData);
     }
 
     return (
         <div className={css.header}>
-            {userData.user.login.value}
+            {userData.user.userData.login}
             <Button validation={validation} onClick={signOut}>Выйти</Button>
         </div>
     );

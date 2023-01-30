@@ -21,7 +21,7 @@ const getRequestData = function (requestBody) {
     return typeof requestBody === 'string' ? JSON.parse(requestBody || "{}") : requestBody;
 }
 
-const checkLoginExist = async function (login) {
+const checkLoginExist = async function (login, db) {
     return (await db.collection('users').doc(login).get()).data();
 }
 
@@ -39,7 +39,7 @@ const validateRequest = function (request) {
     }
 }
 
-const requestHandler = function (req, res, callback) {
+const requestHandler = function (req, res, callback, db) {
     try {
         const request = validateRequest(req);
 
@@ -51,7 +51,7 @@ const requestHandler = function (req, res, callback) {
                 },
             });
         } else {
-            callback(request);
+            callback(request, req, res, db);
         }
     }
     catch (error) {

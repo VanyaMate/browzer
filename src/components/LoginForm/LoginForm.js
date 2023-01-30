@@ -4,7 +4,7 @@ import Input from "../UI/Input/Input";
 import Button from "../UI/Button/Button";
 import {checkLogin, checkPassword} from "../../utils/Checker";
 import {UserData} from "../../App";
-import {serverUrl, sessionStorageLogin, sessionStorageSessionId} from "../../utils/conts";
+import {serverUrl, sessionStorageUserData} from "../../utils/conts";
 
 const LoginForm = () => {
     const userData = useContext(UserData);
@@ -40,16 +40,15 @@ const LoginForm = () => {
             body: JSON.stringify(sendData),
         }).then(async (response) => {
             const body = await response.text();
-            const data = JSON.parse(body);
+            const bodyData = JSON.parse(body);
 
             logInButton.current.classList.remove('sending');
 
-            if (data.sessionId !== undefined) {
-                sessionStorage.setItem(sessionStorageLogin, login.value);
-                sessionStorage.setItem(sessionStorageSessionId, data.sessionId);
+            if (bodyData.error === false) {
+                sessionStorage.setItem(sessionStorageUserData, JSON.stringify(bodyData.data));
 
-                userData.setUser({...sendData, ...{password: null, sessionId: data.sessionId}});
-                return null;
+                userData.setUser(bodyData.data);
+                return;
             }
 
             setLogin({

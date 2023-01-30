@@ -5,7 +5,7 @@ import Button from "../UI/Button/Button";
 import {useContext, useEffect, useState} from "react";
 import {UserData} from "../../App";
 import {checkEmail, checkLogin, checkName, checkPassword} from "../../utils/Checker";
-import {serverUrl, sessionStorageLogin, sessionStorageSessionId} from "../../utils/conts";
+import {serverUrl, sessionStorageUserData} from "../../utils/conts";
 
 const RegistrationForm = () => {
     const userData = useContext(UserData);
@@ -78,7 +78,7 @@ const RegistrationForm = () => {
             }
         };
 
-        fetch(`${ serverUrl }/api/users`, {
+        fetch(`${ serverUrl }/api/users/create`, {
             method: 'post',
             body: JSON.stringify(sendData)
         }).then((response) => {
@@ -90,10 +90,9 @@ const RegistrationForm = () => {
             console.log(data);
 
             if (data.sessionId !== undefined) {
-                sessionStorage.setItem(sessionStorageLogin, login.value);
-                sessionStorage.setItem(sessionStorageSessionId, data.sessionId);
+                sessionStorage.setItem(sessionStorageUserData, JSON.stringify(data));
 
-                userData.setUser({...sendData, ...{password: null, sessionId: data.sessionId}});
+                userData.setUser(data);
             }
         });
     }
