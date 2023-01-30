@@ -140,7 +140,6 @@ const setApi = function (app, db) {
         requestHandler(req, res, async (request) => {
             const query = db.collection('users')
                 .orderBy('login')
-                .startAt(request.data.login)
                 .limit(request.data.limit);
             const getUsers = await query.get();
             const users = getUsers.docs.map((user) => getPublicUserData(user.data()));
