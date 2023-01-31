@@ -6,7 +6,7 @@ const app = express();
 const serviceAccount = require("./perm.json");
 const usersApi = require('./api/usersApi.js');
 const loginApi = require('./api/loginApi.js');
-const messagesApi = require('./api/messagesApi.js');
+const messagesApi = require('./api/conversationsApi.js');
 
 app.use(cors({ origin: true }));
 admin.initializeApp({
