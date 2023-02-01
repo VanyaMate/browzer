@@ -6,7 +6,7 @@ const getPublicUserData = function (userData) {
             lastName: (!userData.personalInfo.lastName.hidden && userData.personalInfo.lastName.value) || '',
         },
         lastTimeOnline: userData.lastTimeOnline || 0,
-        avatar: './photo.jpg'
+        avatar: userData.avatar || './photo.jpg'
     };
 }
 const getPrivateUserData = function (userData) {
@@ -21,7 +21,7 @@ const getRequestData = function (requestBody) {
     return typeof requestBody === 'string' ? JSON.parse(requestBody || "{}") : requestBody;
 }
 
-const checkLoginExist = async function (login, db) {
+const checkLoginExist = async function (db, login) {
     return (await db.collection('users').doc(login).get()).data();
 }
 

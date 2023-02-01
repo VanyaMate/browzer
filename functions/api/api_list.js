@@ -77,8 +77,17 @@ const conversationsApi = {
     },
 };
 
+const messagesApi = {
+    getFromConversation: {
+        url: '/api/messages/getFromConversation',
+        params: {},
+        ret: {}
+    }
+}
+
 exports.list = {
     usersApi,
     loginApi,
-    conversationsApi
+    conversationsApi,
+    messagesApi
 }
