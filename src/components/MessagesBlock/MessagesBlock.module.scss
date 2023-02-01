@@ -2,8 +2,35 @@
 @import "../../utils/sizes";
 
 .messageBlock {
-    flex-direction: column;
+    flex-direction: row;
     height: calc(100% - 40px);
+    justify-content: space-between;
+    display: flex;
+}
+
+.messagesSide {
+    flex-direction: column;
+    width: calc(100% - 50px);
+    max-width: calc(100% - 50px);
+    transition: .1s;
+
+    &.m_opened {
+        width: calc(100% - 160px);
+        max-width: calc(100% - 160px);
+    }
+}
+
+.conversationsSide {
+    width: 50px;
+    max-width: 50px;
+    min-width: 50px;
+    transition: .1s;
+
+    &.c_opened {
+        width: 160px;
+        max-width: 160px;
+        min-width: 160px;
+    }
 }
 
 .messagesContainer {

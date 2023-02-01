@@ -1,11 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Message from "./Message/Message";
 import KeyGen from "../KeyGen";
 import css from './MessagesBlock.module.scss';
 import Filler from "../Filler";
 import ScrollContainer from "../UI/ScrollContainer/ScrollContainer";
+import ConversationBlock from "./ConversationBlock/ConversationBlock";
+import Button from "../UI/Button/Button";
+import {serverUrl} from "../../utils/conts";
+import {UserData} from "../../App";
 
 const MessagesBlock = (props) => {
+    const userData = useContext(UserData);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState(
         Filler.getRandomMessages(
@@ -17,6 +22,8 @@ const MessagesBlock = (props) => {
     const [messagesId, setMessagesId] = useState(props.data.id);
     const [startAddingMesssage, setStartAddingMesssage] = useState(false);
     const [offset, setOffset] = useState(0);
+    const [openedConv, setOpenedConv] = useState(false);
+    const [conversations, setConversations] = useState([]);
 
     const inputMessage = function ({ target }) {
         setMessage(target.value);
@@ -54,7 +61,12 @@ const MessagesBlock = (props) => {
         });
     }
 
-    useEffect(() => {
+    const openConversations = function () {
+
+    }
+
+    // Fake messaging
+/*    useEffect(() => {
         const messageUpdater = setInterval(() => {
             setMessages([...messages]);
         }, 1000);
@@ -76,40 +88,84 @@ const MessagesBlock = (props) => {
             clearInterval(messageUpdater);
             clearTimeout(messageAdder);
         };
-    }, [messages]);
+    }, [messages]);*/
+
+    let loadingConversations = false;
+    useEffect(() => {
+        if (!loadingConversations) {
+            loadingConversations = true;
+            Promise.all(userData.user.userData.conversations.map((convId) => {
+                return new Promise((resolve, reject) => {
+                    fetch(`${serverUrl}/api/conversations/get`, {
+                        method: 'post',
+                        body: JSON.stringify({
+                            login: userData.user.userData.login,
+                            sessionId: userData.user.sessionId,
+                            conversationId: convId,
+                            limit: 1,
+                            offset: 0
+                        })
+                    }).then((data) => {
+                        resolve(data);
+                    });
+                });
+            })).then((conversations) => {
+                Promise.all(
+                    conversations.map(
+                        async (conversation) =>
+                            await conversation.text().then(text => JSON.parse(text))
+                    )
+                ).then((data) => {
+                    setConversations(data);
+                    loadingConversations = false;
+                })
+            });
+        }
+    }, []);
 
     return (
         <div className={css.messageBlock}>
-            <button className={[css.messageSendButton, message !== '' ? css.active : ''].join(' ')} onClick={sendMessage}>Отправить</button>
-            <textarea
-                type={'text'}
-                className={css.messageInput}
-                value={message}
-                onInput={inputMessage}
-                onKeyDown={
-                    (event) =>
-                        event.key === 'Enter' && (event.preventDefault() || sendMessage())
-                }
-            />
-            <ScrollContainer
-                className={css.messagesScrollContainer}
-                containerClassName={css.messagesContainer}
-                addingMessage={[startAddingMesssage, setStartAddingMesssage]}
-                onScroll={(scroll) => {
-                    if (scroll <= 1) {
-                        loadMessages(offset, 20).then((updatedMessageList) => {
-                            setOffset(offset + 1);
-                            setStartAddingMesssage(true);
-                            setMessages(updatedMessageList);
-                        })
+            <div className={css.messagesSide}>
+                <button className={[css.messageSendButton, message !== '' ? css.active : ''].join(' ')} onClick={sendMessage}>Отправить</button>
+                <textarea
+                    type={'text'}
+                    className={css.messageInput}
+                    value={message}
+                    onInput={inputMessage}
+                    onKeyDown={
+                        (event) =>
+                            event.key === 'Enter' && (event.preventDefault() || sendMessage())
                     }
-                }}
-            >
-                {
-                    messages.map((messageData) => <Message key={KeyGen.getId()} data={messageData}/>)
-                }
-                <h1>Load...</h1>
-            </ScrollContainer>
+                />
+                <ScrollContainer
+                    className={css.messagesScrollContainer}
+                    containerClassName={css.messagesContainer}
+                    addingMessage={[startAddingMesssage, setStartAddingMesssage]}
+                    onScroll={(scroll) => {
+                        if (scroll <= 1) {
+                            loadMessages(offset, 20).then((updatedMessageList) => {
+                                setOffset(offset + 1);
+                                setStartAddingMesssage(true);
+                                setMessages(updatedMessageList);
+                            })
+                        }
+                    }}
+                >
+                    {
+                        messages.map((messageData) => <Message key={KeyGen.getId()} data={messageData}/>)
+                    }
+                    <h1>Load...</h1>
+                </ScrollContainer>
+            </div>
+            <div className={[css.conversationsSide, openedConv ? css.c_opened : ''].join(' ')}>
+                <Button
+                    onClick={() => {
+                        setOpenedConv(!openedConv);
+                    }}
+                    validation={true}
+                >Open</Button>
+                <ConversationBlock conversations={conversations}/>
+            </div>
         </div>
     );
 };

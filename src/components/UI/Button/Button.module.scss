@@ -2,8 +2,9 @@
 @import "../../../utils/colors";
 
 .button {
-    padding: $commonMargin;
+    padding: 0px $commonMargin;
     background: $darkGray;
+    height: 30px;
     color: $liteGray;
     outline: none;
     border: none;

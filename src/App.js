@@ -28,7 +28,7 @@ const App = () => {
     }
 
     const checkUserData = async function (userData) {
-        await fetch(`${serverUrl}/api/login/id`, {
+        return await fetch(`${serverUrl}/api/login/id`, {
             method: 'post',
             body: JSON.stringify({
                 login: userData.userData.login,
@@ -42,7 +42,7 @@ const App = () => {
             }
             return false;
         }).catch((error) => {
-            console.log(error);
+            console.error(error);
             return false;
         });
     }
