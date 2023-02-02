@@ -94,6 +94,21 @@ const MessagesBlock = (props) => {
     useEffect(() => {
         if (!loadingConversations) {
             loadingConversations = true;
+/*            fetch(`${serverUrl}/api/conversations/getList`, {
+                method: 'post',
+                body: JSON.stringify({
+                    login: userData.user.userData.login,
+                    sessionId: userData.user.sessionId,
+                    ids: userData.user.userData.conversations,
+                    limit: 1,
+                    offset: 0
+                })
+            }).then(async (response) => {
+                const {data} = await response.json();
+                setConversations(data.conversations);
+                console.log(data.conversations);
+            })*/
+
             Promise.all(userData.user.userData.conversations.map((convId) => {
                 return new Promise((resolve, reject) => {
                     fetch(`${serverUrl}/api/conversations/get`, {
@@ -113,10 +128,16 @@ const MessagesBlock = (props) => {
                 Promise.all(
                     conversations.map(
                         async (conversation) =>
-                            await conversation.text().then(text => JSON.parse(text))
+                            await conversation.json()
                     )
                 ).then((data) => {
-                    setConversations(data);
+                    const successConversations = data
+                        .filter((conv) => !conv.error)
+                        .map((conv) => conv.data);
+
+                    console.log(successConversations);
+
+                    setConversations(successConversations);
                     loadingConversations = false;
                 })
             });

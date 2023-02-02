@@ -7,12 +7,10 @@ const ConversationBlock = ({ conversations }) => {
     return (
         <div className={css.conversationBlock}>
             {
-                conversations
-                    .filter(conv => !conv.error)
-                    .map((conversation, index) => {
-                        conversation.top = index * 50;
-                        return <Conversation key={KeyGen.getId()} data={conversation}/>;
-                    })
+                conversations.map((conversation, index) => {
+                    conversation.top = index * 50;
+                    return <Conversation key={KeyGen.getId()} data={conversation}/>;
+                })
             }
         </div>
     );

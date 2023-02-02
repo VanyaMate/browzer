@@ -95,7 +95,7 @@ const createUserAccount = function (db, data) {
                         },
                         conversations: [],
                         friends: [],
-                        avatar: './photo.jpg',
+                        avatar: 'https://t3.ftcdn.net/jpg/02/43/51/48/360_F_243514868_XDIMJHNNJYKLRST05XnnTj0MBpC4hdT5.jpg',
                         email: data.email,
                         sessionId: sessionId,
                         creationDate: Date.now()

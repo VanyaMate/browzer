@@ -75,6 +75,11 @@ const conversationsApi = {
         params: {},
         ret: {}
     },
+    getList: {
+        url: '/api/conversations/getList',
+        params: {},
+        ret: {}
+    }
 };
 
 const messagesApi = {

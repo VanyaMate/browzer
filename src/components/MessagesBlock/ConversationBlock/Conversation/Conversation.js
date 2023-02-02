@@ -2,26 +2,27 @@ import React, {useContext} from 'react';
 import css from './Conversation.module.scss';
 import {UserData} from "../../../../App";
 
-const Conversation = ({ data: {data} }) => {
+const Conversation = ({ data }) => {
     const userData = useContext(UserData);
-    const conversationName = data.conversation.type === 'group'
-        ? data.conversation.name
-        : data.conversation.members.filter(member => {
-            return member.login !== userData.user.userData.login;
-        })[0].login;
+
+    const conversationData = data.info.type === 'group'
+        ? {login: data.info.name, avatar: data.info.avatar}
+        : data.info.members.filter(({ userData: memberData }) => {
+            return memberData.login !== userData.user.userData.login;
+        })[0].userData;
 
     return (
         <div className={css.conversationItem} style={{top: data.top}}>
             <div className={css.info}>
                 <div className={css.login}>
-                    {conversationName}
+                    {conversationData.login}
                 </div>
                 <div className={css.lastMessage}>
                     {data.messages[0]?.text || ''}
                 </div>
             </div>
             <div className={css.avatar}>
-                <img className={css.image} src={data.avatar}/>
+                <img className={css.image} src={conversationData.avatar}/>
             </div>
         </div>
     );
