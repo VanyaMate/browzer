@@ -11,7 +11,7 @@
     right: 0;
     overflow: hidden;
     transition: .1s;
-    padding-right: 0px;
+    padding-right: 0;
 
     &:hover {
         cursor: pointer;
@@ -37,7 +37,7 @@
 
         & .login {
             width: calc(100% - #{$commonMargin});
-            margin: 0px 5px;
+            margin: 0 5px;
             color: $liteGray;
         }
 

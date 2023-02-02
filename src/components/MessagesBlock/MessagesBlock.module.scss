@@ -6,6 +6,10 @@
     height: calc(100% - 40px);
     justify-content: space-between;
     display: flex;
+
+    &.hidden {
+        display: none;
+    }
 }
 
 .messagesSide {

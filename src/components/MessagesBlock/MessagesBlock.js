@@ -9,7 +9,7 @@ import Button from "../UI/Button/Button";
 import {serverUrl} from "../../utils/conts";
 import {UserData} from "../../App";
 
-const MessagesBlock = (props) => {
+const MessagesBlock = ({ data, activeOption }) => {
     const userData = useContext(UserData);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState(
@@ -19,7 +19,7 @@ const MessagesBlock = (props) => {
             [1, 25]
         )
     );
-    const [messagesId, setMessagesId] = useState(props.data.id);
+    const [messagesId, setMessagesId] = useState(data.id);
     const [startAddingMesssage, setStartAddingMesssage] = useState(false);
     const [offset, setOffset] = useState(0);
     const [openedConv, setOpenedConv] = useState(false);
@@ -94,7 +94,7 @@ const MessagesBlock = (props) => {
     useEffect(() => {
         if (!loadingConversations) {
             loadingConversations = true;
-/*            fetch(`${serverUrl}/api/conversations/getList`, {
+            fetch(`${serverUrl}/api/conversations/getList`, {
                 method: 'post',
                 body: JSON.stringify({
                     login: userData.user.userData.login,
@@ -105,47 +105,16 @@ const MessagesBlock = (props) => {
                 })
             }).then(async (response) => {
                 const {data} = await response.json();
-                setConversations(data.conversations);
-                console.log(data.conversations);
-            })*/
+                const successConversations = data.conversations
+                    .filter((conv) => conv.messages !== null)
 
-            Promise.all(userData.user.userData.conversations.map((convId) => {
-                return new Promise((resolve, reject) => {
-                    fetch(`${serverUrl}/api/conversations/get`, {
-                        method: 'post',
-                        body: JSON.stringify({
-                            login: userData.user.userData.login,
-                            sessionId: userData.user.sessionId,
-                            conversationId: convId,
-                            limit: 1,
-                            offset: 0
-                        })
-                    }).then((data) => {
-                        resolve(data);
-                    });
-                });
-            })).then((conversations) => {
-                Promise.all(
-                    conversations.map(
-                        async (conversation) =>
-                            await conversation.json()
-                    )
-                ).then((data) => {
-                    const successConversations = data
-                        .filter((conv) => !conv.error)
-                        .map((conv) => conv.data);
-
-                    console.log(successConversations);
-
-                    setConversations(successConversations);
-                    loadingConversations = false;
-                })
-            });
+                setConversations(successConversations);
+            })
         }
     }, []);
 
     return (
-        <div className={css.messageBlock}>
+        <div className={[css.messageBlock, activeOption === data ? '' : css.hidden].join(' ')}>
             <div className={css.messagesSide}>
                 <button className={[css.messageSendButton, message !== '' ? css.active : ''].join(' ')} onClick={sendMessage}>Отправить</button>
                 <textarea
@@ -173,7 +142,7 @@ const MessagesBlock = (props) => {
                     }}
                 >
                     {
-                        messages.map((messageData) => <Message key={KeyGen.getId()} data={messageData}/>)
+                        messages.map((messageData) => <Message key={`${messageData.user + messageData.date}`} data={messageData}/>)
                     }
                     <h1>Load...</h1>
                 </ScrollContainer>
