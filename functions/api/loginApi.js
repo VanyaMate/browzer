@@ -3,6 +3,11 @@ const {loginApi} = require('./api_list').list;
 const {checkLoginPass, checkLoginSessionId} = require('./methods/login').methods;
 
 const setApi = function (app, db) {
+    console.log('set login api, get: /login');
+    app.get('/login', (req, res) => {
+        res.status(200).send({error: false, data: {anyData: [1, 2, 3]}});
+    })
+
     // Проверить логин/пароль пользователя и получить sessionId
     app.post(loginApi.pass.url, (req, res) => {
         requestHandler(req, res, async (request) => {
