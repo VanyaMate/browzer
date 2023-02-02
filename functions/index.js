@@ -17,11 +17,17 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+console.log('Set APIs');
 usersApi.setApi(app, db);
+console.log('loginApi set API');
 loginApi.setApi(app, db);
+console.log('conversationApi set API');
 conversationApi.setApi(app, db);
+console.log('conversationApi set API');
 conversationApi.setApi(app, db);
+console.log('messagesApi set API');
 messagesApi.setApi(app, db);
+console.log('APIs setted');
 
 // exports.app = functions.https.onRequest(app);
 
