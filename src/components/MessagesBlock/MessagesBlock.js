@@ -102,7 +102,10 @@ const MessagesBlock = ({ data, activeOption }) => {
                     ids: userData.user.userData.conversations,
                     limit: 1,
                     offset: 0
-                })
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }).then(async (response) => {
                 const {data} = await response.json();
                 const successConversations = data.conversations

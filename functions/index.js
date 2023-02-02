@@ -17,12 +17,16 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-console.log('Set APIs');
+// parse application/x-www-form-urlencoded
+// app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(express.json())
+
+console.log('Set APIs v2');
 usersApi.setApi(app, db);
 console.log('loginApi set API');
 loginApi.setApi(app, db);
-console.log('conversationApi set API');
-conversationApi.setApi(app, db);
 console.log('conversationApi set API');
 conversationApi.setApi(app, db);
 console.log('messagesApi set API');
@@ -32,6 +36,6 @@ console.log('APIs setted');
 // exports.app = functions.https.onRequest(app);
 
 // for deploy
-app.listen(3000, () => {
-    console.log(`Example app listening on port 3000`)
+app.listen(5001, () => {
+    console.log(`listen post 5001`);
 })

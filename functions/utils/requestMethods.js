@@ -18,6 +18,7 @@ const getPrivateUserData = function (userData) {
     return privateData;
 }
 const getRequestData = function (requestBody) {
+    console.log('getRequestData', requestBody);
     return typeof requestBody === 'string' ? JSON.parse(requestBody || "{}") : requestBody;
 }
 
@@ -40,6 +41,7 @@ const validateRequest = function (request) {
 }
 
 const requestHandler = function (req, res, callback, db) {
+    console.log('handler', req);
     try {
         const request = validateRequest(req);
         console.log('first: ', request);

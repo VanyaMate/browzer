@@ -33,7 +33,10 @@ const App = () => {
             body: JSON.stringify({
                 login: userData.userData.login,
                 sessionId: userData.sessionId
-            })
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         }).then(async (response) => {
             const body = await response.text();
             const data = JSON.parse(body);

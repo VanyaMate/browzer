@@ -80,7 +80,10 @@ const RegistrationForm = () => {
 
         fetch(`${ serverUrl }/api/users/create`, {
             method: 'post',
-            body: JSON.stringify(sendData)
+            body: JSON.stringify(sendData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         }).then((response) => {
             registrationButton.current.classList.remove('sending');
 

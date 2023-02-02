@@ -38,6 +38,9 @@ const LoginForm = () => {
         fetch(`${ serverUrl }/api/login/pass`, {
             method: 'post',
             body: JSON.stringify(sendData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         }).then(async (response) => {
             const body = await response.text();
             const bodyData = JSON.parse(body);
