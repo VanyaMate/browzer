@@ -91,7 +91,6 @@ const getConversationsList = async function (db, data) {
 
     return await Promise.all(data.ids.map(async (id) => {
         queriesData[id].info = (await db.collection('conversations').doc(id).get()).data();
-        console.log(id, queriesData[id].info);
         if (queriesData[id].info) {
             queriesData[id].messages = await getMessagesFromConversation(db, {
                 conversationId: id,
@@ -104,9 +103,6 @@ const getConversationsList = async function (db, data) {
             }));
 
             queriesData[id].info.members = members;
-
-
-            console.log(id, queriesData[id]);
 
             if (!queriesData[id].messages.error) {
                 queriesData[id].messages = queriesData[id].messages.data.messages;

@@ -115,7 +115,6 @@ const createUserAccount = function (db, data) {
                     });
                 })
                 .catch((error) => {
-                    console.log(error);
                     reject({
                         error: true,
                         data: error
