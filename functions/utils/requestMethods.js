@@ -42,6 +42,7 @@ const validateRequest = function (request) {
 const requestHandler = function (req, res, callback, db) {
     try {
         const request = validateRequest(req);
+        console.log('first: ', request);
 
         if (request.error) {
             res.status(request.code).send({
@@ -51,6 +52,7 @@ const requestHandler = function (req, res, callback, db) {
                 },
             });
         } else {
+            console.log(request);
             callback(request, req, res, db);
         }
     }

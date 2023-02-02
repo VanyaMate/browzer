@@ -1,4 +1,5 @@
 const getMessagesFromConversation = async function (db, data) {
+    console.log(data);
     const messagesAmount = data.limit + data.offset;
     const messagesQuery = db.collection('messages')
         .where('convId', '==', data.conversationId)

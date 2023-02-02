@@ -64,6 +64,7 @@ const checkLoginPass = function (db, data) {
 }
 
 const checkLoginSessionId = function (db, data) {
+    console.log('checkLoginSsessionId', data);
     return new Promise(async (resolve, reject) => {
         if (checker.checkLogin(data.login)) {
             const doc = db.collection('users').doc(data.login);
