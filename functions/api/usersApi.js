@@ -13,9 +13,7 @@ const {
 const setApi = function (app, db) {
     // Создать пользователя
     app.post(usersApi.create.url, (req, res) => {
-        console.log('Create User API');
         requestHandler(req, res, async (request) => {
-            console.log('Create USER');
             createUserAccount(db, request.data)
                 .then(body => res.status(200).send(body))
                 .catch(body => res.status(200).send(body));

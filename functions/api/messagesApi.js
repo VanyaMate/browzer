@@ -1,12 +1,12 @@
 const {messagesApi} = require('./api_list').list;
 const { requestHandler } = require('../utils/requestMethods').requestMethods;
-const {validateUserAccess} = require('./methods/conversations').methods;
+const {validateConversationUserAccess} = require('./methods/conversations').methods;
 const {getMessagesFromConversation, getMessagesFromConversationsAfter} = require('./methods/messages').methods;
 
 const setApi = function (app, db) {
     app.post(messagesApi.getFromConversation.url, (req, res) => {
         requestHandler(req, res, (request) => {
-            validateUserAccess(db, request.data)
+            validateConversationUserAccess(db, request.data)
                 .then(({ data: id }) => {
                     getMessagesFromConversation(db, request.data)
                         .then((body) => res.status(200).send(body))

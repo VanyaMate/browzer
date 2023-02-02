@@ -10,6 +10,8 @@ const conversationApi = require('./api/conversationsApi.js');
 const messagesApi = require('./api/messagesApi.js');
 
 app.use(cors({ origin: true }));
+app.use(express.json())
+
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://socialbrowsr-cfe4b-default-rtdb.europe-west1.firebasedatabase.app"
@@ -17,21 +19,10 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-// parse application/x-www-form-urlencoded
-// app.use(bodyParser.urlencoded({ extended: false }))
-
-// parse application/json
-app.use(express.json())
-
-console.log('Set APIs v2');
 usersApi.setApi(app, db);
-console.log('loginApi set API');
 loginApi.setApi(app, db);
-console.log('conversationApi set API');
 conversationApi.setApi(app, db);
-console.log('messagesApi set API');
 messagesApi.setApi(app, db);
-console.log('APIs setted');
 
 // exports.app = functions.https.onRequest(app);
 
