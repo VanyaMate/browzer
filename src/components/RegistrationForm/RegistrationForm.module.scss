@@ -6,4 +6,10 @@
         margin-bottom: $commonMargin;
         border-bottom: 5px dotted $darkGray;
     }
+
+    & .sending {
+        pointer-events: none;
+        background: $orange;
+        cursor: none;
+    }
 }

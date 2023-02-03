@@ -28,7 +28,8 @@ const LoginForm = () => {
     }
 
     const logIn = function () {
-        logInButton.current.classList.add('sending');
+        logInButton.current.classList.add(css.sending);
+        logInButton.current.textContent = 'Вход..';
 
         const sendData = {
             login: login.value,
@@ -45,7 +46,8 @@ const LoginForm = () => {
             const body = await response.text();
             const bodyData = JSON.parse(body);
 
-            logInButton.current.classList.remove('sending');
+            logInButton.current.classList.remove(css.sending);
+            logInButton.current.textContent = 'Войти';
 
             if (bodyData.error === false) {
                 sessionStorage.setItem(sessionStorageUserData, JSON.stringify(bodyData.data));
@@ -53,11 +55,6 @@ const LoginForm = () => {
                 userData.setUser(bodyData.data);
                 return;
             }
-
-            setLogin({
-                value: login.value,
-                confirmed: false
-            })
 
             setPassword({
                 value: password.value,

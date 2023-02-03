@@ -61,8 +61,24 @@ const MessagesBlock = ({ data, activeOption }) => {
         });
     }
 
-    const openConversations = function () {
-
+    const loadConversations = async function () {
+        return await fetch(`${serverUrl}/api/conversations/getList`, {
+            method: 'post',
+            body: JSON.stringify({
+                login: userData.user.userData.login,
+                sessionId: userData.user.sessionId,
+                ids: userData.user.userData.conversations,
+                limit: 1,
+                offset: 0
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(async (response) => {
+            const {data} = await response.json();
+            return data.conversations
+                .filter((conv) => conv.messages !== null);
+        })
     }
 
     // Fake messaging
@@ -94,24 +110,9 @@ const MessagesBlock = ({ data, activeOption }) => {
     useEffect(() => {
         if (!loadingConversations) {
             loadingConversations = true;
-            fetch(`${serverUrl}/api/conversations/getList`, {
-                method: 'post',
-                body: JSON.stringify({
-                    login: userData.user.userData.login,
-                    sessionId: userData.user.sessionId,
-                    ids: userData.user.userData.conversations,
-                    limit: 1,
-                    offset: 0
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then(async (response) => {
-                const {data} = await response.json();
-                const successConversations = data.conversations
-                    .filter((conv) => conv.messages !== null)
-
-                setConversations(successConversations);
+            loadConversations().then((conversations) => {
+                setConversations(conversations);
+                loadingConversations = false;
             })
         }
     }, []);

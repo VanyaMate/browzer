@@ -1,0 +1,9 @@
+@import "../../../../utils/colors";
+@import "../../../../utils/sizes";
+
+.emptyBlock {
+    border: 3px dotted $darkGray;
+    padding: $commonMargin;
+    border-radius: 10px;
+    width: 100%;
+}

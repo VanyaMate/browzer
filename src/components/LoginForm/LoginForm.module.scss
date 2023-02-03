@@ -10,4 +10,10 @@
     &.active {
         border: 1px solid $blue;
     }
+
+    & .sending {
+        pointer-events: none;
+        background: $orange;
+        cursor: none;
+    }
 }

@@ -1,5 +1,8 @@
 const {checker} = require("../../utils/checkerUserData");
 const bcrypt = require("bcrypt");
+const {requestHandler, getPublicUserData, getPrivateUserData, checkLoginExist} = require('../../utils/requestMethods').requestMethods;
+
+
 const validateUserData = function (userData) {
     if (!checker.checkLogin(userData.login)) {
         return {error: true, message: 'bad login'};
@@ -23,6 +26,7 @@ const validateUserData = function (userData) {
 
     return {error: false, data: {}};
 }
+
 const validateChangeUserData = function (changedUserData) {
     switch (changedUserData.name) {
         case 'personalInfo':
@@ -33,11 +37,32 @@ const validateChangeUserData = function (changedUserData) {
                 return true;
             }
             break;
+        case 'browzer':
+            return true;
+            break;
         default:
             return false;
     }
 }
-const {requestHandler, getPublicUserData, getPrivateUserData, checkLoginExist} = require('../../utils/requestMethods').requestMethods;
+
+const validateUserAccess = function (db, data) {
+    return new Promise(async (resolve, reject) => {
+        const user = (await db.collection('users').doc(data.login).get()).data()
+        if (user !== undefined && user.sessionId === data.sessionId) {
+            resolve({
+                error: false,
+                data: {}
+            })
+        } else {
+            reject({
+                error: true,
+                data: {
+                    message: 'bad request'
+                }
+            })
+        }
+    });
+}
 
 const createUserAccount = function (db, data) {
     return new Promise(async (resolve, reject) => {
@@ -162,7 +187,7 @@ const changeUserData = function (db, data) {
     return new Promise(async (resolve, reject) => {
         let valid = validateChangeUserData(data);
 
-        if (valid && await checkLoginExist(data.login, db)) {
+        if (valid) {
             const document = db.collection('users').doc(data.login);
 
             await document.update({
@@ -173,16 +198,15 @@ const changeUserData = function (db, data) {
                 error: false,
                 data: {
                     message: "changed",
-
                 }
             });
         } else {
             reject({
                 error: true,
                 data: {
-                    message: "bad data"
+                    message: 'bad data'
                 }
-            });
+            })
         }
     });
 }
@@ -217,5 +241,6 @@ exports.methods = {
     getPublicUserDataByLogin,
     getListOfPublicUsersDataByLogin,
     changeUserData,
-    deleteUserData
+    deleteUserData,
+    validateUserAccess
 }

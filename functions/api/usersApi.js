@@ -7,7 +7,8 @@ const {
     getPublicUserDataByLogin,
     getListOfPublicUsersDataByLogin,
     changeUserData,
-    deleteUserData
+    deleteUserData,
+    validateUserAccess
 } = require('./methods/users').methods;
 
 const setApi = function (app, db) {
@@ -41,9 +42,15 @@ const setApi = function (app, db) {
     // Изменение информации пользователя
     app.post(usersApi.change.url, (req, res) => {
         requestHandler(req, res, async (request) => {
-            changeUserData(db, request.data)
-                .then(body => res.status(200).send(body))
-                .catch(body => res.status(200).send(body));
+            validateUserAccess(db, request.data)
+                .then(() => {
+                    changeUserData(db, request.data)
+                        .then(body => res.status(200).send(body))
+                        .catch(body => res.status(200).send(body));
+                })
+                .catch((body) => {
+                    res.status(200).send(body);
+                })
         });
     });
 

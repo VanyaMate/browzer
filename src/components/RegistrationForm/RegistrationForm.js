@@ -66,7 +66,8 @@ const RegistrationForm = () => {
     }
 
     const registration = function () {
-        registrationButton.current.classList.add('sending');
+        registrationButton.current.classList.add(css.sending);
+        registrationButton.current.textContent = 'Регистрация..';
 
         const sendData = {
             login: login.value,
@@ -85,16 +86,13 @@ const RegistrationForm = () => {
                 'Content-Type': 'application/json'
             }
         }).then((response) => {
-            registrationButton.current.classList.remove('sending');
+            registrationButton.current.classList.remove(css.sending);
+            registrationButton.current.textContent = 'Регистрация';
 
-            return response.text();
-        }).then((body) => {
-            const data = JSON.parse(body);
-            console.log(data);
-
-            if (data.sessionId !== undefined) {
+            return response.json();
+        }).then(({ data, error }) => {
+            if (!error) {
                 sessionStorage.setItem(sessionStorageUserData, JSON.stringify(data));
-
                 userData.setUser(data);
             }
         });

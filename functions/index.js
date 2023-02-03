@@ -24,7 +24,7 @@ loginApi.setApi(app, db);
 conversationApi.setApi(app, db);
 messagesApi.setApi(app, db);
 
-// exports.app = functions.https.onRequest(app);
+//exports.app = functions.https.onRequest(app);
 
 // for deploy
 app.listen(5001, () => {
