@@ -87,6 +87,11 @@ const messagesApi = {
         url: '/api/messages/getFromConversation',
         params: {},
         ret: {}
+    },
+    addMessage: {
+        url: '/api/messages/addMessage',
+        params: {},
+        ret: {}
     }
 }
 

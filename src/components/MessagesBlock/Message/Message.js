@@ -1,14 +1,14 @@
 import React, {useEffect} from 'react';
 import css from './Message.module.scss';
 
-const Message = ({ data }) => {
+const Message = ({ data, login }) => {
     return (
-        <div className={[css.messageItem, data.user === 0 ? css.my : ''].join(' ')}>
+        <div className={[css.messageItem, data.login === login ? css.my : ''].join(' ')}>
             <div className={css.date}>
-                User Userovich ({data.user}) [ { Math.ceil((Date.now() - data.date) / 1000)} секунд назад ]
+                {data.login} [ { data.timestamp } секунд назад ]
             </div>
             <div className={css.text}>
-                { data.message }
+                { data.text }
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 const {messagesApi} = require('./api_list').list;
 const { requestHandler } = require('../utils/requestMethods').requestMethods;
 const {validateConversationUserAccess} = require('./methods/conversations').methods;
-const {getMessagesFromConversation, getMessagesFromConversationsAfter} = require('./methods/messages').methods;
+const {getMessagesFromConversation, getMessagesFromConversationsAfter, addMessageTo} = require('./methods/messages').methods;
 
 const setApi = function (app, db) {
     app.post(messagesApi.getFromConversation.url, (req, res) => {
@@ -16,6 +16,18 @@ const setApi = function (app, db) {
                         }))
                 })
                 .catch((body) => res.status(200).send(body));
+        });
+    });
+
+    app.post(messagesApi.addMessage.url, (req, res) => {
+        requestHandler(req, res, (request) => {
+            validateConversationUserAccess(db, request.data)
+                .then((body) => {
+                    addMessageTo(db, request.data)
+                        .then((body) => res.status(200).send(body))
+                        .catch((body) => res.status(200).send(body));
+                })
+                .catch((body) => req.status(200).send(body));
         });
     });
 }

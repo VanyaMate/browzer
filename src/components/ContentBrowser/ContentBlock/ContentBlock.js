@@ -41,7 +41,12 @@ const ContentBlock = ({ options, order, updateBlockList: {contentBlockList, upda
                         {
                             blockOptions.map((option) => {
                                 const Component = ContentBlockTypes[option.type].Component;
-                                return <Component activeOption={activeOption} key={option.id} data={option}/>
+                                return <Component
+                                    activeOption={activeOption}
+                                    key={option.id}
+                                    data={option}
+                                    options={{blockOptions, setBlockOptions}}
+                                />
                             })
                         }
                     </div>

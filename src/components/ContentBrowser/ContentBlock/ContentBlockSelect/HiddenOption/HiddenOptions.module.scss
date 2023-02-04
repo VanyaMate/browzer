@@ -1,0 +1,28 @@
+@import "../../../../../utils/colors";
+
+.burgerMenuItem {
+    position: relative;
+    color: $liteGray;
+    font-size: 14px;
+    transition: .1s;
+    width: 100px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: $darkBlue;
+    padding: 5px;
+
+    &:not(:last-child) {
+        margin-bottom: 5px;
+    }
+
+    &.active {
+        background: $blue;
+        color: $white;
+    }
+
+    &:hover {
+        color: $white;
+    }
+}

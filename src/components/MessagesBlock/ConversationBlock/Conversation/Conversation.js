@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import css from './Conversation.module.scss';
 import {UserData} from "../../../../App";
 
-const Conversation = ({ data }) => {
+const Conversation = ({ data, messages }) => {
     const userData = useContext(UserData);
 
     const conversationData = data.info.type === 'group'
@@ -12,7 +12,15 @@ const Conversation = ({ data }) => {
         })[0].userData;
 
     return (
-        <div className={css.conversationItem} style={{top: data.top}}>
+        <div
+            className={css.conversationItem}
+            style={{top: data.top}}
+            onClick={() => {
+                messages.loadMessages(data.id, 0, 25).then((loadedMessages) => {
+                    messages.setMessages(loadedMessages);
+                });
+            }}
+        >
             <div className={css.info}>
                 <div className={css.login}>
                     {conversationData.login}

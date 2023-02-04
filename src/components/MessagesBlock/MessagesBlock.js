@@ -9,18 +9,12 @@ import Button from "../UI/Button/Button";
 import {serverUrl} from "../../utils/conts";
 import {UserData} from "../../App";
 
-const MessagesBlock = ({ data, activeOption }) => {
+const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOptions} }) => {
     const userData = useContext(UserData);
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState(
-        Filler.getRandomMessages(
-            Filler.worldList,
-            Filler.getRandomValue(0, 15),
-            [1, 25]
-        )
-    );
+    const [messages, setMessages] = useState([]);
     const [messagesId, setMessagesId] = useState(data.id);
-    const [startAddingMesssage, setStartAddingMesssage] = useState(false);
+    const [startAddingMessage, setStartAddingMessage] = useState(false);
     const [offset, setOffset] = useState(0);
     const [openedConv, setOpenedConv] = useState(false);
     const [conversations, setConversations] = useState([]);
@@ -33,32 +27,49 @@ const MessagesBlock = ({ data, activeOption }) => {
         if (message === '') return;
         const updatedMessageList = [
             {
-                date: Date.now(),
-                user: 0,
-                message: message
+                timestamp: Date.now(),
+                login: userData.user.userData.login,
+                text: message
             },
             ...messages
         ];
+
+        fetch(`${serverUrl}/api/messages/addMessage`, {
+            method: 'post',
+            body: JSON.stringify({
+                login: userData.user.userData.login,
+                sessionId: userData.user.sessionId,
+                conversationId: conversationId,
+                text: message
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            console.log(response);
+        })
 
         setMessages(updatedMessageList);
         setMessage('');
     }
 
-    const loadMessages = function (offset, amount) {
-        return new Promise((resolve, reject) => {
-            const updatedMessageList = [
-                ...messages,
-                ...Filler.getRandomMessages(
-                    Filler.worldList,
-                    amount,
-                    [1, 25]
-                )
-            ];
-
-            setTimeout(() => {
-                resolve(updatedMessageList);
-            }, 1000);
-        });
+    const loadMessages = async function (conversationId, offset, amount) {
+        return fetch(`${serverUrl}/api/messages/getFromConversation`, {
+            method: 'post',
+            body: JSON.stringify({
+                login: userData.user.userData.login,
+                sessionId: userData.user.sessionId,
+                conversationId: conversationId,
+                limit: amount,
+                offset: offset
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(async (response) => {
+            const {data} = await response.json();
+            return data.messages;
+        })
     }
 
     const loadConversations = async function () {
@@ -81,31 +92,6 @@ const MessagesBlock = ({ data, activeOption }) => {
         })
     }
 
-    // Fake messaging
-/*    useEffect(() => {
-        const messageUpdater = setInterval(() => {
-            setMessages([...messages]);
-        }, 1000);
-
-        const messageAdder = setTimeout(() => {
-            const updatedMessageList = [
-                ...Filler.getRandomMessages(
-                    Filler.worldList,
-                    1,
-                    [1, 25]
-                ),
-                ...messages
-            ];
-
-            setMessages(updatedMessageList);
-        }, Filler.getRandomValue(500, 3500));
-
-        return () => {
-            clearInterval(messageUpdater);
-            clearTimeout(messageAdder);
-        };
-    }, [messages]);*/
-
     let loadingConversations = false;
     useEffect(() => {
         if (!loadingConversations) {
@@ -120,7 +106,12 @@ const MessagesBlock = ({ data, activeOption }) => {
     return (
         <div className={[css.messageBlock, activeOption === data ? '' : css.hidden].join(' ')}>
             <div className={css.messagesSide}>
-                <button className={[css.messageSendButton, message !== '' ? css.active : ''].join(' ')} onClick={sendMessage}>Отправить</button>
+                <button
+                    className={[css.messageSendButton, message !== '' ? css.active : ''].join(' ')}
+                    onClick={sendMessage}
+                >
+                    Отправить
+                </button>
                 <textarea
                     type={'text'}
                     className={css.messageInput}
@@ -128,37 +119,39 @@ const MessagesBlock = ({ data, activeOption }) => {
                     onInput={inputMessage}
                     onKeyDown={
                         (event) =>
-                            event.key === 'Enter' && (event.preventDefault() || sendMessage())
+                            (event.key === 'Enter') && (event.preventDefault() || sendMessage())
                     }
                 />
                 <ScrollContainer
                     className={css.messagesScrollContainer}
                     containerClassName={css.messagesContainer}
-                    addingMessage={[startAddingMesssage, setStartAddingMesssage]}
+                    addingMessage={[startAddingMessage, setStartAddingMessage]}
                     onScroll={(scroll) => {
                         if (scroll <= 1) {
-                            loadMessages(offset, 20).then((updatedMessageList) => {
+/*                            loadMessages(offset, 20).then((updatedMessageList) => {
                                 setOffset(offset + 1);
-                                setStartAddingMesssage(true);
+                                setStartAddingMessage(true);
                                 setMessages(updatedMessageList);
-                            })
+                            })*/
                         }
                     }}
                 >
                     {
-                        messages.map((messageData) => <Message key={`${messageData.user + messageData.date}`} data={messageData}/>)
+                        messages.map((messageData) => <Message
+                            key={`${messageData.login + messageData.timestamp}`}
+                            data={messageData}
+                            login={userData.user.userData.login}
+                        />)
                     }
                     <h1>Load...</h1>
                 </ScrollContainer>
             </div>
             <div className={[css.conversationsSide, openedConv ? css.c_opened : ''].join(' ')}>
                 <Button
-                    onClick={() => {
-                        setOpenedConv(!openedConv);
-                    }}
+                    onClick={() => setOpenedConv(!openedConv)}
                     validation={true}
                 >Open</Button>
-                <ConversationBlock conversations={conversations}/>
+                <ConversationBlock conversations={conversations} messages={{messages, setMessages, loadMessages}}/>
             </div>
         </div>
     );

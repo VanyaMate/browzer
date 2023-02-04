@@ -41,7 +41,32 @@ const getMessagesFromConversationsAfter = async function (db, data) {
     };
 }
 
+const addMessageTo = async function (db, data) {
+    return await db.collection('messages').add({
+        login: data.login,
+        changed: false,
+        convId: data.conversationId,
+        timestamp: Date.now(),
+        text: data.text
+    }).then(() => {
+        return {
+            error: false,
+            data: {
+                messages: 'added'
+            }
+        }
+    }).catch(() => {
+        return {
+            error: true,
+            data: {
+                messages: 'bad request'
+            }
+        }
+    });
+}
+
 exports.methods = {
     getMessagesFromConversation,
-    getMessagesFromConversationsAfter
+    getMessagesFromConversationsAfter,
+    addMessageTo
 }

@@ -1,0 +1,42 @@
+@import "../../../../../utils/colors";
+@import "../../../../../utils/sizes";
+
+.selectControlButton {
+    width: 30px;
+    height: 30px;
+    border: 2px dotted $liteGray;
+    position: relative;
+    cursor: pointer;
+    background: transparent;
+    transition: .1s;
+
+    &:not(:last-child) {
+        margin-right: 10px;
+    }
+
+    &:hover,
+    &.activeControl {
+        background: $blue;
+        border: 2px solid $blue;
+
+        &:after {
+            color: $white;
+        }
+    }
+}
+
+.addOptionButton {
+    margin-left: $commonMargin;
+
+    &:after {
+        content: '+';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        line-height: 0px;
+        font-size: 20px;
+        color: $liteGray;
+        font-weight: bold;
+    }
+}

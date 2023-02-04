@@ -19,6 +19,21 @@ const ContentBrowser = () => {
 
     const [contentBlockList, setContentBlockList] = useState(browzerItems.map(item => item.blocks));
 
+    const updateBrowzer = function (userData, browzerData) {
+        return fetch(`${serverUrl}/api/users/change`, {
+            method: 'post',
+            body: JSON.stringify({
+                login: userData.user.userData.login,
+                name: 'browzer',
+                value: browzerData,
+                sessionId: userData.user.sessionId
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
+
     const updateContentBlockList = function (data) {
         const browzerData = data.map((block, index) => {
             return {
@@ -37,20 +52,9 @@ const ContentBrowser = () => {
             }
         });
 
-        fetch(`${serverUrl}/api/users/change`, {
-            method: 'post',
-            body: JSON.stringify({
-                login: userData.user.userData.login,
-                name: 'browzer',
-                value: browzerData,
-                sessionId: userData.user.sessionId
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((data) => {
-            console.log('data', data);
-        })
+        updateBrowzer(userData, browzerData).then((data) => {
+            console.log(data);
+        });
 
         setContentBlockList(data);
     }

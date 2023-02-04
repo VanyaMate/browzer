@@ -75,7 +75,8 @@ const getConversation = async function (db, data) {
 
         return {
             info: {...convQueryData, members},
-            messages: messages.data.messages
+            messages: messages.data.messages,
+            id: data.conversationId
         };
     } else {
         return false;
@@ -106,6 +107,7 @@ const getConversationsList = async function (db, data) {
 
             if (!queriesData[id].messages.error) {
                 queriesData[id].messages = queriesData[id].messages.data.messages;
+                queriesData[id].id = id;
             }
         }
         return true;

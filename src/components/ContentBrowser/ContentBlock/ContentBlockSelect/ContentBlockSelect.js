@@ -1,9 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
 import css from './ContentBlockSelect.module.scss';
-import KeyGen from "../../../KeyGen";
 import {ContentBlockTypes} from "../../ContentBlockTypes";
 import {UserData} from "../../../../App";
-import {serverUrl} from "../../../../utils/conts";
+import BurgerMenu from "./BurgerMenu/BurgerMenu";
+import AddOptionButton from "./AddOptionButton/AddOptionButton";
+import OptionList from "./OptionList/OptionList";
+
 const getShowedOptions = function (options) {
     let showedOptions = [];
     for (let i = 0; i < 3; i++) {
@@ -21,6 +23,7 @@ const getHiddenOptions = function (options) {
     }
     return hiddenOptions;
 }
+
 
 const ContentBlockSelect = ({ options, active }) => {
     const userData = useContext(UserData);
@@ -60,73 +63,24 @@ const ContentBlockSelect = ({ options, active }) => {
 
     return (
         <div className={css.selectArea}>
-            <div className={css.selectList}>
-                {
-                    showedOptions?.map((option) =>
-                        <div
-                            key={option.id}
-                            className={[css.selectButton, active.activeOption === option ? css.active : ''].join(' ')}
-                            onClick={() => {
-                                activateOption(option);
-                            }}
-                        >
-                            {option.name}
-                            <div
-                                className={css.closeButton}
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    closeOption(option);
-                                }}
-                            > </div>
-                        </div>
-                    )
-                }
-            </div>
-
-            <div
-                className={[css.selectControlButton, css.addOptionButton].join(' ')}
-                onClick={() => {
-                    addOption({
-                        name: 'Сооб ' + Math.random().toFixed(1),
-                        type: 'messages'
-                    })
-                }}
-            > </div>
+            <OptionList
+                activateOptionCallback={activateOption}
+                closeOptionCallback={closeOption}
+                active={active}
+                showedOptions={showedOptions}
+            />
+            <AddOptionButton
+                addOption={addOption}
+            />
             {
                 blockOptions.length > 3 ?
-                    <div
-                        className={[css.selectControlButton, css.openBurgerMenuButton, hiddenOptions.some((op) => op === active.activeOption) ? css.activeControl : ''].join(' ')}
-                        onClick={() => {
-                            setOpenBurger(!openBurger);
-                        }}
-                    >
-                        <div className={css.burgerMenuIcon}> </div>
-                        <div
-                            className={[css.burgerMenu, openBurger ? css.opened : ''].join(' ')}
-                        >
-                            {
-                                hiddenOptions.map((option) => {
-                                    return <div
-                                        className={[css.burgerMenuItem, active.activeOption === option ? css.active : ''].join(' ')}
-                                        key={option.id}
-                                        onClick={() => {
-                                            activateOption(option);
-                                        }}
-                                    >
-                                        {option.name}
-                                        <div
-                                            className={css.closeButton}
-                                            onClick={(event) => {
-                                                event.stopPropagation();
-                                                closeOption(option);
-                                            }}
-                                        > </div>
-                                    </div>
-                                })
-                            }
-                        </div>
-                    </div> :
-                    ''
+                    <BurgerMenu
+                        closeOptionCallback={closeOption}
+                        active={active}
+                        activateOptionCallback={activateOption}
+                        hiddenOptions={hiddenOptions}
+                        openBurger={{openBurger, setOpenBurger}}
+                    /> : ''
             }
         </div>
     );
