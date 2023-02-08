@@ -2,8 +2,10 @@ const socketServer = require('http').createServer();
 const { Server } = require('socket.io');
 const {response} = require("express");
 const io = new Server(socketServer, {
+    // https://browzer.onrender.com
+    // http://localhost:3000
     cors: {
-        origin: "http://localhost:3000",
+        origin: "https://browzer.onrender.com",
         methods: ["GET", "POST"],
         allowedHeaders: ["user-data"],
         credentials: true

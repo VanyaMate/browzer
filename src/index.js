@@ -5,7 +5,10 @@ import App from './App';
 import io from "socket.io-client";
 import Conversations from "./store/Conversations";
 
-const socket = io("localhost:5002", {
+// https://browzer.onrender.com
+// localhost
+
+const socket = io("https://browzer.onrender.com:5002", {
     withCredentials: true,
     extraHeaders: {
         "user-data": ""
