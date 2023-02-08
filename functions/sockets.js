@@ -5,7 +5,7 @@ const io = new Server(socketServer, {
     // https://browzer.onrender.com
     // http://localhost:3000
     cors: {
-        origin: "https://browzer.onrender.com",
+        origin: true,
         methods: ["GET", "POST"],
         allowedHeaders: ["user-data"],
         credentials: true

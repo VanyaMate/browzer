@@ -8,11 +8,8 @@ import Conversations from "./store/Conversations";
 // https://browzer.onrender.com
 // localhost
 
-const socket = io("https://browzer.onrender.com:5002", {
-    withCredentials: true,
-    extraHeaders: {
-        "user-data": ""
-    }
+const socket = io("localhost:5002", {
+
 });
 
 socket.handlers = new Map();
