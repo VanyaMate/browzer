@@ -8,7 +8,7 @@ const usersApi = require('./api/usersApi.js');
 const loginApi = require('./api/loginApi.js');
 const conversationApi = require('./api/conversationsApi.js');
 const messagesApi = require('./api/messagesApi.js');
-const socketInit = require('./sockets').socketInit;
+// const socketInit = require('./sockets').socketInit;
 
 app.use(cors({ origin: true }));
 app.use(express.json())
