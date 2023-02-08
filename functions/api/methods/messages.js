@@ -1,5 +1,4 @@
 const getMessagesFromConversation = async function (db, data) {
-    console.log(data);
     const messagesAmount = data.limit + data.offset;
     const messagesQuery = db.collection('messages')
         .where('convId', '==', data.conversationId)
@@ -42,17 +41,19 @@ const getMessagesFromConversationsAfter = async function (db, data) {
 }
 
 const addMessageTo = async function (db, data) {
-    return await db.collection('messages').add({
+    const messageData = {
         login: data.login,
         changed: false,
         convId: data.conversationId,
         timestamp: Date.now(),
         text: data.text
-    }).then(() => {
+    };
+
+    return await db.collection('messages').add(messageData).then(() => {
         return {
             error: false,
             data: {
-                messages: 'added'
+                message: messageData
             }
         }
     }).catch(() => {

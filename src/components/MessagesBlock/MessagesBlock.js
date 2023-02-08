@@ -11,6 +11,7 @@ import {UserData} from "../../App";
 
 const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOptions} }) => {
     const userData = useContext(UserData);
+    const socket = userData.socket;
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [messagesId, setMessagesId] = useState(data.id);
@@ -18,6 +19,7 @@ const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOpt
     const [offset, setOffset] = useState(0);
     const [openedConv, setOpenedConv] = useState(false);
     const [conversations, setConversations] = useState([]);
+    const [conversationId, setConversationId] = useState(null);
 
     const inputMessage = function ({ target }) {
         setMessage(target.value);
@@ -101,6 +103,17 @@ const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOpt
                 loadingConversations = false;
             })
         }
+
+        // так не работает. гг вп
+        socket.handlers.set(this, (data) => {
+            if (data.text && data.login && data.convId === conversationId) {
+                setMessages([data, ...messages]);
+            }
+        });
+
+        return () => {
+            socket.handlers.delete(this);
+        }
     }, []);
 
     return (
@@ -151,7 +164,7 @@ const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOpt
                     onClick={() => setOpenedConv(!openedConv)}
                     validation={true}
                 >Open</Button>
-                <ConversationBlock conversations={conversations} messages={{messages, setMessages, loadMessages}}/>
+                <ConversationBlock conversations={{conversations, setConversationId}} messages={{messages, setMessages, loadMessages}}/>
             </div>
         </div>
     );

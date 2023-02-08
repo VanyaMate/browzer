@@ -8,6 +8,7 @@ const usersApi = require('./api/usersApi.js');
 const loginApi = require('./api/loginApi.js');
 const conversationApi = require('./api/conversationsApi.js');
 const messagesApi = require('./api/messagesApi.js');
+const socketInit = require('./sockets').socketInit;
 
 app.use(cors({ origin: true }));
 app.use(express.json())
@@ -24,9 +25,9 @@ loginApi.setApi(app, db);
 conversationApi.setApi(app, db);
 messagesApi.setApi(app, db);
 
-exports.app = functions.https.onRequest(app);
+socketInit(app, db);
 
 // for deploy
-/*app.listen(5001, () => {
-    console.log(`listen post 5001`);
-})*/
+app.listen(5001, () => {
+    console.log(`Backend server start: 5001`);
+})

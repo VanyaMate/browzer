@@ -63,6 +63,18 @@ const validateConversationsListUserAccess = function (db, data) {
     });
 }
 
+const getConversationMembers = async function (db, data) {
+    const convQuery = db.collection('conversations').doc(data.conversationId);
+    const convQueryResult = await convQuery.get();
+    const convQueryData = convQueryResult.data();
+
+    if (convQueryData !== undefined) {
+        return convQueryData.members;
+    } else {
+        return false;
+    }
+}
+
 const getConversation = async function (db, data) {
     const convQuery = db.collection('conversations').doc(data.conversationId);
     const convQueryResult = await convQuery.get();
@@ -123,6 +135,7 @@ const getConversationsList = async function (db, data) {
 exports.methods = {
     getConversation,
     getConversationsList,
+    getConversationMembers,
     validateConversationUserAccess,
     validateConversationsListUserAccess
 }

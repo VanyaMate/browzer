@@ -1,9 +1,6 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import ContentBrowser from "./components/ContentBrowser/ContentBrowser";
 import Header from "./components/Header/Header";
-
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import LoginPage from "./components/LoginPage/LoginPage";
 import {serverUrl, sessionStorageUserData} from "./utils/conts";
 
@@ -19,7 +16,7 @@ const firebaseConfig = {
 export const UserData = createContext(null);
 const savedUserData = sessionStorage.getItem(sessionStorageUserData);
 
-const App = () => {
+const App = ({ socket }) => {
     const [user, setUser] = useState(null);
     let loading = false;
 
@@ -56,6 +53,12 @@ const App = () => {
             const userData = JSON.parse(savedUserData);
             loading = true;
             checkUserData(userData).then((data) => {
+                console.log(userData);
+                socket.send({
+                    type: 'auth',
+                    login: userData.userData.login,
+                    sessionId: userData.sessionId
+                });
                 setUser(data || null);
                 loading = false;
             }).catch(() => {
@@ -65,7 +68,7 @@ const App = () => {
     }, [])
 
     return (
-        <UserData.Provider value={{user, setUser}}>
+        <UserData.Provider value={{user, setUser, socket}}>
             {
                 user !== null ?
                     <div>
@@ -74,7 +77,7 @@ const App = () => {
                     </div>
                     :
                     <div>
-                        <LoginPage/>
+                        <LoginPage socket={socket}/>
                     </div>
             }
         </UserData.Provider>

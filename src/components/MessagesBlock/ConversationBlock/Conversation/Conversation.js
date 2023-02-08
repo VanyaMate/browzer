@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import css from './Conversation.module.scss';
 import {UserData} from "../../../../App";
 
-const Conversation = ({ data, messages }) => {
+const Conversation = ({ data, messages, setConversationId }) => {
     const userData = useContext(UserData);
 
     const conversationData = data.info.type === 'group'
@@ -16,6 +16,8 @@ const Conversation = ({ data, messages }) => {
             className={css.conversationItem}
             style={{top: data.top}}
             onClick={() => {
+                setConversationId(data.id);
+
                 messages.loadMessages(data.id, 0, 25).then((loadedMessages) => {
                     messages.setMessages(loadedMessages);
                 });

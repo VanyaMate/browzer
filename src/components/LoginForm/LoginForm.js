@@ -6,7 +6,7 @@ import {checkLogin, checkPassword} from "../../utils/Checker";
 import {UserData} from "../../App";
 import {serverUrl, sessionStorageUserData} from "../../utils/conts";
 
-const LoginForm = () => {
+const LoginForm = ({ socket }) => {
     const userData = useContext(UserData);
     const [login, setLogin] = useState({ value: '', confirmed: false });
     const [password, setPassword] = useState({ value: '', confirmed: false });
@@ -53,6 +53,11 @@ const LoginForm = () => {
                 sessionStorage.setItem(sessionStorageUserData, JSON.stringify(bodyData.data));
 
                 userData.setUser(bodyData.data);
+                socket.send({
+                    type: 'auth',
+                    login: bodyData.data.userData.login,
+                    sessionId: bodyData.data.sessionId
+                })
                 return;
             }
 

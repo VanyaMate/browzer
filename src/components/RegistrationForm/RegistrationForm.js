@@ -7,7 +7,7 @@ import {UserData} from "../../App";
 import {checkEmail, checkLogin, checkName, checkPassword} from "../../utils/Checker";
 import {serverUrl, sessionStorageUserData} from "../../utils/conts";
 
-const RegistrationForm = () => {
+const RegistrationForm = ({ socket }) => {
     const userData = useContext(UserData);
     const [login, setLogin] = useState({ value: '', confirmed: false });
     const [password, setPassword] = useState({ value: '', confirmed: false });
