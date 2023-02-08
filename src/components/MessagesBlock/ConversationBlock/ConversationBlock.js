@@ -13,7 +13,7 @@ const ConversationBlock = ({ conversations: {conversations, setConversationId}, 
                         key={conversation.id}
                         data={conversation}
                         setConversationId={setConversationId}
-                        messages={messages}
+                        messages={conversation.messages}
                     />;
                 })
             }

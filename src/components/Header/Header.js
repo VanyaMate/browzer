@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import css from './Header.module.scss';
 import {UserData} from "../../App";
 import Button from "../UI/Button/Button";

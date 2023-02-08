@@ -107,7 +107,7 @@ const getConversationsList = async function (db, data) {
         if (queriesData[id].info) {
             queriesData[id].messages = await getMessagesFromConversation(db, {
                 conversationId: id,
-                limit: 1,
+                limit: data.limit,
                 offset: 0
             });
 

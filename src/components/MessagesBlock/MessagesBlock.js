@@ -1,15 +1,15 @@
 import React, {useContext, useEffect, useState} from 'react';
 import Message from "./Message/Message";
-import KeyGen from "../KeyGen";
 import css from './MessagesBlock.module.scss';
-import Filler from "../Filler";
 import ScrollContainer from "../UI/ScrollContainer/ScrollContainer";
 import ConversationBlock from "./ConversationBlock/ConversationBlock";
 import Button from "../UI/Button/Button";
 import {serverUrl} from "../../utils/conts";
 import {UserData} from "../../App";
+import Conversations from "../../store/Conversations";
+import {observer} from "mobx-react-lite";
 
-const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOptions} }) => {
+const MessagesBlock = observer(({ data, activeOption, options: {blockOptions, setBlockOptions} }) => {
     const userData = useContext(UserData);
     const socket = userData.socket;
     const [message, setMessage] = useState('');
@@ -20,6 +20,7 @@ const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOpt
     const [openedConv, setOpenedConv] = useState(false);
     const [conversations, setConversations] = useState([]);
     const [conversationId, setConversationId] = useState(null);
+    const defaultLimit = 25;
 
     const inputMessage = function ({ target }) {
         setMessage(target.value);
@@ -81,7 +82,7 @@ const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOpt
                 login: userData.user.userData.login,
                 sessionId: userData.user.sessionId,
                 ids: userData.user.userData.conversations,
-                limit: 1,
+                limit: defaultLimit,
                 offset: 0
             }),
             headers: {
@@ -94,25 +95,14 @@ const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOpt
         })
     }
 
-    let loadingConversations = false;
     useEffect(() => {
-        if (!loadingConversations) {
-            loadingConversations = true;
+        if (Conversations.needToGetConversationData) {
+            Conversations.loading = true;
             loadConversations().then((conversations) => {
-                setConversations(conversations);
-                loadingConversations = false;
+                Conversations.list = conversations.map((item) => { item.messagesLoading = false; return item; });
+                Conversations.loaded = true;
+                Conversations.loading = false;
             })
-        }
-
-        // так не работает. гг вп
-        socket.handlers.set(this, (data) => {
-            if (data.text && data.login && data.convId === conversationId) {
-                setMessages([data, ...messages]);
-            }
-        });
-
-        return () => {
-            socket.handlers.delete(this);
         }
     }, []);
 
@@ -141,20 +131,31 @@ const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOpt
                     addingMessage={[startAddingMessage, setStartAddingMessage]}
                     onScroll={(scroll) => {
                         if (scroll <= 1) {
-/*                            loadMessages(offset, 20).then((updatedMessageList) => {
-                                setOffset(offset + 1);
-                                setStartAddingMessage(true);
-                                setMessages(updatedMessageList);
-                            })*/
+                            const conversation = Conversations.getById(conversationId);
+                            if (conversation.messagesLoading) return;
+                            conversation.messagesLoading = true;
+                            loadMessages(conversationId, (offset + 1) * defaultLimit, defaultLimit).then((updatedMessageList) => {
+                                if (updatedMessageList.length) {
+                                    setOffset(offset + 1);
+                                    setStartAddingMessage(true);
+                                    const conversation = Conversations.getById(conversationId);
+                                    if (conversation) {
+                                        conversation.messages = [...conversation.messages, ...updatedMessageList];
+                                        conversation.messagesLoading = false;
+                                    }
+                                }
+                            })
                         }
                     }}
                 >
                     {
-                        messages.map((messageData) => <Message
-                            key={`${messageData.login + messageData.timestamp}`}
-                            data={messageData}
-                            login={userData.user.userData.login}
-                        />)
+                        Conversations.getById(conversationId)?.messages.map((messageData) => {
+                            return <Message
+                                key={`${messageData.login + messageData.timestamp}`}
+                                data={messageData}
+                                login={userData.user.userData.login}
+                            />
+                        })
                     }
                     <h1>Load...</h1>
                 </ScrollContainer>
@@ -164,10 +165,10 @@ const MessagesBlock = ({ data, activeOption, options: {blockOptions, setBlockOpt
                     onClick={() => setOpenedConv(!openedConv)}
                     validation={true}
                 >Open</Button>
-                <ConversationBlock conversations={{conversations, setConversationId}} messages={{messages, setMessages, loadMessages}}/>
+                <ConversationBlock conversations={{conversations: Conversations.list, setConversationId}} messages={{messages, setMessages, loadMessages}}/>
             </div>
         </div>
     );
-};
+});
 
 export default MessagesBlock;

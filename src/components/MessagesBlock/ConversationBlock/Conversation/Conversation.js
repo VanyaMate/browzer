@@ -17,10 +17,6 @@ const Conversation = ({ data, messages, setConversationId }) => {
             style={{top: data.top}}
             onClick={() => {
                 setConversationId(data.id);
-
-                messages.loadMessages(data.id, 0, 25).then((loadedMessages) => {
-                    messages.setMessages(loadedMessages);
-                });
             }}
         >
             <div className={css.info}>
