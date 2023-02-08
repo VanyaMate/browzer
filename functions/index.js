@@ -25,7 +25,7 @@ loginApi.setApi(app, db);
 conversationApi.setApi(app, db);
 messagesApi.setApi(app, db);
 
-socketInit(app, db);
+// socketInit(app, db);
 
 // for deploy
 app.listen(5001, () => {
