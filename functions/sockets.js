@@ -1,26 +1,27 @@
 const socketServer = require('http').createServer();
 const { Server } = require('socket.io');
-const {response} = require("express");
-const io = new Server(socketServer, {
-    // https://browzer.onrender.com
-    // http://localhost:3000
-    cors: {
-        origin: true,
-        methods: ["GET", "POST"],
-        allowedHeaders: ["user-data"],
-        credentials: true
-    }
-});
 const { validateUserAccess } = require('../functions/api/methods/users').methods;
 
 const sockets = function (app, db) {
+    const io = new Server(socketServer, {
+        // https://browzer.onrender.com
+        // http://localhost:3000
+        cors: {
+            origin: true,
+            methods: ["GET", "POST"],
+            allowedHeaders: ["user-data"]
+        }
+    });
+
     const connections = {
 
     };
 
     app.socketConnections = connections;
+    console.log('io is: ', io);
 
     io.on('connection', (socket) => {
+        console.log('connection', socket.id);
         socket.on('message', (data) => {
             console.log('Message', data);
             if (data.type === 'auth') {

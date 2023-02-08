@@ -9,7 +9,9 @@ import Conversations from "./store/Conversations";
 // localhost
 
 const socket = io("localhost:5002", {
+    cors: {
 
+    }
 });
 
 socket.handlers = new Map();
