@@ -1,7 +1,7 @@
 import React from 'react';
 import css from './ConversationBlock.module.scss';
 import Conversation from "./Conversation/Conversation";
-import KeyGen from "../../KeyGen";
+import KeyGen from "../../../KeyGen";
 
 const ConversationBlock = ({ conversations: {conversations, setConversationId}, messages }) => {
     return (

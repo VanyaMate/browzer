@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import css from './Conversation.module.scss';
-import {UserData} from "../../../../App";
+import {UserData} from "../../../../../App";
 
 const Conversation = ({ data, messages, setConversationId }) => {
     const userData = useContext(UserData);

@@ -3,20 +3,18 @@ import css from './Header.module.scss';
 import {UserData} from "../../App";
 import Button from "../UI/Button/Button";
 import {sessionStorageUserData} from "../../utils/conts";
+import HeaderMusicBlock from "./HeaderBlocks/HeaderMusicBlock/HeaderMusicBlock";
+import HeaderSearchBlock from "./HeaderBlocks/HeaderSearchBlock/HeaderSearchBlock";
+import HeaderProfileBlock from "./HeaderBlocks/HeaderProfileBlock/HeaderProfileBlock";
 
 const Header = () => {
-    const userData = useContext(UserData);
-    const [validation, setValidation] = useState(true);
-
-    const signOut = function () {
-        userData.setUser(null);
-        sessionStorage.removeItem(sessionStorageUserData);
-    }
-
     return (
         <div className={css.header}>
-            {userData.user.userData.login}
-            <Button validation={validation} onClick={signOut}>Выйти</Button>
+            <div className={css.content}>
+                <HeaderMusicBlock/>
+                <HeaderSearchBlock/>
+                <HeaderProfileBlock/>
+            </div>
         </div>
     );
 };

@@ -3,9 +3,27 @@
 
 .header {
     height: $headerSize;
-    background: $darkGray;
+    // background: $darkGray;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
+
+    & .content {
+        display: flex;
+        justify-content: center;
+        height: 100%;
+
+        & > * {
+            width: 400px;
+            margin: $commonMargin;
+            margin-right: 0;
+            height: calc(100% - #{$commonMargin});
+            background: $darkGray;
+
+            &:first-child {
+                margin-left: 0;
+            }
+        }
+    }
 }

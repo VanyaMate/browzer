@@ -4,11 +4,12 @@ import './index.scss';
 import App from './App';
 import io from "socket.io-client";
 import Conversations from "./store/Conversations";
+import {serverUrl} from "./utils/conts";
 
-// https://browzer.onrender.com
+// browzer.onrender.com
 // localhost
 
-const socket = io("localhost:5001", {
+const socket = io(serverUrl, {
 
 });
 

@@ -8,12 +8,14 @@ const getMessagesFromConversation = async function (db, data) {
     let messages = [];
 
     if (data.offset === undefined) {
-        messages = messagesQueryResult.docs.map((result) => result.data()) || []
+        messages = messagesQueryResult.docs.map((result) => {
+            return {...result.data(), id: result.id};
+        }) || []
     } else {
         for (let i = data.offset; i < messagesAmount; i++) {
             const message = messagesQueryResult.docs[i];
             if (message) {
-                messages.push(message.data());
+                messages.push({...message.data(), id: message.id});
             }
         }
     }
@@ -35,7 +37,12 @@ const getMessagesFromConversationsAfter = async function (db, data) {
     return {
         error: false,
         data: {
-            messages: messagesQueryResult.docs.map((result) => result.data()) || []
+            messages: messagesQueryResult.docs.map((result) => {
+                return {
+                    ...result.data(),
+                    id: result.id
+                }
+            }) || []
         }
     };
 }
@@ -49,11 +56,11 @@ const addMessageTo = async function (db, data) {
         text: data.text
     };
 
-    return await db.collection('messages').add(messageData).then(() => {
+    return await db.collection('messages').add(messageData).then((id) => {
         return {
             error: false,
             data: {
-                message: messageData
+                message: {...messageData, id}
             }
         }
     }).catch(() => {

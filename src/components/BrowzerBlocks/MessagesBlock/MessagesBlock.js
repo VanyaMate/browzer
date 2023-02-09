@@ -1,12 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react';
 import Message from "./Message/Message";
 import css from './MessagesBlock.module.scss';
-import ScrollContainer from "../UI/ScrollContainer/ScrollContainer";
+import ScrollContainer from "../../UI/ScrollContainer/ScrollContainer";
 import ConversationBlock from "./ConversationBlock/ConversationBlock";
-import Button from "../UI/Button/Button";
-import {serverUrl} from "../../utils/conts";
-import {UserData} from "../../App";
-import Conversations from "../../store/Conversations";
+import Button from "../../UI/Button/Button";
+import {serverUrl} from "../../../utils/conts";
+import {UserData} from "../../../App";
+import Conversations from "../../../store/Conversations";
 import {observer} from "mobx-react-lite";
 
 const MessagesBlock = observer(({ data, activeOption, options: {blockOptions, setBlockOptions} }) => {
@@ -151,7 +151,7 @@ const MessagesBlock = observer(({ data, activeOption, options: {blockOptions, se
                     {
                         Conversations.getById(conversationId)?.messages.map((messageData) => {
                             return <Message
-                                key={`${messageData.login + messageData.timestamp}`}
+                                key={messageData.id}
                                 data={messageData}
                                 login={userData.user.userData.login}
                             />

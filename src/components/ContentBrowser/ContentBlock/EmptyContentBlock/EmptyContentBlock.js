@@ -12,7 +12,6 @@ const EmptyContentBlock = ({ order, options: {setBlockOptions} }) => {
             No elements { order }
 
             <div onClick={() => {
-                console.log('set blokc');
                 setBlockOptions([{
                     name: types['messages'].defaultTitle,
                     type: 'messages',
@@ -22,6 +21,18 @@ const EmptyContentBlock = ({ order, options: {setBlockOptions} }) => {
                 }])
             }}>
                 Add messages
+            </div>
+
+            <div onClick={() => {
+                setBlockOptions([{
+                    name: types['google'].defaultTitle,
+                    type: 'google',
+                    active: true,
+                    order: 0,
+                    id: `id_${Math.random()}`
+                }])
+            }}>
+                Add google
             </div>
 
         </div>
