@@ -8,10 +8,8 @@ import Conversations from "./store/Conversations";
 // https://browzer.onrender.com
 // localhost
 
-const socket = io("https://browzer.onrender.com", {
-    cors: {
+const socket = io("localhost:5001", {
 
-    }
 });
 
 socket.handlers = new Map();
