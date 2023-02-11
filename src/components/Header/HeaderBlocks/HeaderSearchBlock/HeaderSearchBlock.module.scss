@@ -1,10 +1,157 @@
 @import "../../../../utils/colors";
 @import "../../../../utils/sizes";
 
+$searchHeight: 40px;
+$marginLeft: 5px;
+$selectWidth: 60px;
+$inputWidth: calc(
+        #{$contentBlockWidth} -
+        #{$searchHeight} -
+        #{$marginLeft} * 2 -
+        #{$selectWidth}
+);
+$buttonWidth: $searchHeight;
+
 .block {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     color: $gray;
     font-size: 14px;
+    height: 100%;
+    width: 100%;
+    background: $darkBlue;
+    position: relative;
+
+    & > * {
+        margin-left: $marginLeft;
+
+        &:first-child {
+            margin-left: 0px;
+        }
+    }
+}
+
+.searchTypeSelect {
+    height: $searchHeight;
+    position: relative;
+}
+
+.searchType {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $darkGray;
+    height: 100%;
+    cursor: pointer;
+    transition: .1s;
+    width: $selectWidth;
+
+    &:hover {
+        //background: $blue;
+        color: $white;
+    }
+}
+
+.searchSelect {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: calc(#{$selectWidth} + 10px);
+    background: $darkGray;
+    box-shadow: $defaultBoxShadow;
+    cursor: pointer;
+    transition: .1s;
+    overflow: hidden;
+    padding: 0 5px;
+    height: 0;
+    opacity: 0;
+
+    &.opened {
+        height: auto;
+        padding: 5px;
+        opacity: 1;
+    }
+
+    & .searchOption {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(#{$searchHeight} - 10px);
+        padding: 5px;
+        margin-bottom: 5px;
+        background: $darkBlue;
+
+        &:last-child {
+            margin: 0;
+        }
+
+        &:hover {
+            transition: .1s;
+            //background: $blue;
+            color: #fff;
+        }
+    }
+}
+
+.searchInput {
+    width: $inputWidth;
+
+    & input {
+        width: 100%;
+        height: $searchHeight;
+        padding: 10px;
+        background: $darkGray;
+        border: none;
+        outline: none;
+        color: $white;
+
+        &::placeholder {
+            color: $gray;
+        }
+    }
+}
+
+.searchButton {
+    width: $buttonWidth;
+    height: $searchHeight;
+    background: $darkGray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: .1s;
+
+    &:hover {
+        background: $blue;
+        color: $white;
+    }
+}
+
+.searchResult {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: -5px;
+    width: 100%;
+    height: 0px;
+    padding: 0 $commonMargin;
+    background: $darkGray;
+    box-shadow: $defaultBoxShadow;
+    opacity: 0;
+    transition: .1s;
+    overflow: hidden;
+
+    & > * {
+        margin-top: 10px;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    &.r_opened {
+        height: auto;
+        padding: $commonMargin;
+        opacity: 1;
+    }
 }

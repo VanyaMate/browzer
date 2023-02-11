@@ -8,6 +8,7 @@
     top: 0;
     left: 0;
     width: 100%;
+    z-index: 123;
 
     & .content {
         display: flex;
@@ -16,10 +17,10 @@
 
         & > * {
             width: 400px;
+            min-width: 400px;
             margin: $commonMargin;
             margin-right: 0;
             height: calc(100% - #{$commonMargin});
-            background: $darkGray;
 
             &:first-child {
                 margin-left: 0;

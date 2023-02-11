@@ -46,7 +46,7 @@
         padding: 0px $commonMargin;
         background: $darkGray;
         z-index: 99;
-        box-shadow: 0 4px 10px -4px rgba(0, 0, 0, .35);
+        box-shadow: $defaultBoxShadow;
         transition: .1s;
         height: 0px;
         overflow: hidden;

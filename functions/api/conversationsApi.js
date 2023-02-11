@@ -4,7 +4,8 @@ const {
     getConversation,
     getConversationsList,
     validateConversationUserAccess,
-    validateConversationsListUserAccess
+    validateConversationsListUserAccess,
+    createConversation
 } = require('./methods/conversations').methods;
 
 
@@ -58,6 +59,14 @@ const setApi = function (app, db) {
                 })
                 .catch((body) => res.status(200).send(body));
         });
+    });
+
+    app.post(conversationsApi.create.url, (req, res) => {
+        requestHandler(req, res, async(request) => {
+            createConversation(db, request.data)
+                .then((body) => res.status(200).send(body))
+                .catch((body) => res.status(200).send(body));
+        })
     });
 }
 

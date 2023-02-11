@@ -56,11 +56,11 @@ const addMessageTo = async function (db, data) {
         text: data.text
     };
 
-    return await db.collection('messages').add(messageData).then((id) => {
+    return await db.collection('messages').add(messageData).then((response) => {
         return {
             error: false,
             data: {
-                message: {...messageData, id}
+                message: {...messageData, id: response.id}
             }
         }
     }).catch(() => {

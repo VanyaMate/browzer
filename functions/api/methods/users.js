@@ -172,10 +172,18 @@ const getPublicUserDataByLogin = function (db, data) {
 const getListOfPublicUsersDataByLogin = function (db, data) {
     return new Promise(async (resolve, reject) => {
         const query = db.collection('users')
-            .orderBy('login')
-            .limit(data.limit);
+            .orderBy('login');
         const getUsers = await query.get();
-        const users = getUsers.docs.map((user) => getPublicUserData(user.data()));
+
+        const users = [];
+        const docs = getUsers.docs;
+        for (let i = 0; i < docs.length; i++) {
+            const user = docs[i].data();
+            if (user.login.match(new RegExp(`^${data.login}`, 'i'))) {
+                users.push(getPublicUserData(user));
+                if (users.length === data.limit) break;
+            }
+        }
 
         resolve({
             error: false,
@@ -239,6 +247,7 @@ const deleteUserData = function (db, data) {
 exports.methods = {
     createUserAccount,
     getPublicUserDataByLogin,
+    getPublicUserData,
     getListOfPublicUsersDataByLogin,
     changeUserData,
     deleteUserData,

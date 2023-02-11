@@ -1,0 +1,29 @@
+.resultItem {
+    display: flex;
+    justify-content: space-between;
+
+    & > * > * {
+        margin-left: 5px;
+
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+
+    .resultInfo {
+        display: flex;
+        align-items: center;
+
+        .resultAvatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+    }
+
+    .resultControl {
+        .resultButton {
+
+        }
+    }
+}

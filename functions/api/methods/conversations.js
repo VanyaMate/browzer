@@ -1,7 +1,7 @@
 const {query} = require("express");
 const {queryAllByAttribute} = require("@testing-library/react");
 const {getMessagesFromConversation} = require('./messages').methods;
-const {getPublicUserDataByLogin} = require('./users').methods;
+const {getPublicUserDataByLogin, getPublicUserData} = require('./users').methods;
 
 const validateConversationUserAccess = function (db, data) {
     return new Promise(async (resolve, reject) => {
@@ -32,7 +32,6 @@ const validateConversationUserAccess = function (db, data) {
         });
     });
 }
-
 const validateConversationsListUserAccess = function (db, data) {
     return new Promise(async (resolve, reject) => {
         const userQuery = db.collection('users').doc(data.login);
@@ -62,7 +61,51 @@ const validateConversationsListUserAccess = function (db, data) {
         });
     });
 }
+const validateConversationData = function (db, data) {
 
+}
+
+const createConversation = function (db, data) {
+    // TODO: Не безопасно
+    return new Promise(async (resolve, reject) => {
+        const conversation = await db.collection('conversations').add({
+            members: data.members.map((login) => { return {login}}),
+            type: 'single',
+            creationTime: Date.now()
+        });
+
+        const members = await Promise.all(data.members.map(async (login) => {
+            const query = await db.collection('users').doc(login).get();
+            const userData = query.data();
+            if (userData.conversations) {
+                userData.conversations.push(conversation.id);
+            } else {
+                userData.conversations = [conversation.id];
+            }
+            await db.collection('users').doc(login).set(userData);
+            return {userData: getPublicUserData(userData), info: data.members};
+        }));
+
+        if (conversation) {
+            resolve({
+                error: false,
+                data: {
+                    id: conversation.id,
+                    info: {
+                        members,
+                        type: 'single'
+                    },
+                    messages: []
+                }
+            })
+        } else {
+            reject({
+                error: true,
+                data: error
+            })
+        }
+    });
+}
 const getConversationMembers = async function (db, data) {
     const convQuery = db.collection('conversations').doc(data.conversationId);
     const convQueryResult = await convQuery.get();
@@ -74,7 +117,6 @@ const getConversationMembers = async function (db, data) {
         return false;
     }
 }
-
 const getConversation = async function (db, data) {
     const convQuery = db.collection('conversations').doc(data.conversationId);
     const convQueryResult = await convQuery.get();
@@ -94,7 +136,6 @@ const getConversation = async function (db, data) {
         return false;
     }
 }
-
 const getConversationsList = async function (db, data) {
     const queriesData = {};
 
@@ -136,6 +177,7 @@ exports.methods = {
     getConversation,
     getConversationsList,
     getConversationMembers,
+    createConversation,
     validateConversationUserAccess,
     validateConversationsListUserAccess
 }

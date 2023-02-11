@@ -163,6 +163,7 @@ const MessagesBlock = observer(({ data, activeOption, options: {blockOptions, se
             <div className={[css.conversationsSide, openedConv ? css.c_opened : ''].join(' ')}>
                 <Button
                     onClick={() => setOpenedConv(!openedConv)}
+                    className={css.c_button}
                     validation={true}
                 >Open</Button>
                 <ConversationBlock conversations={{conversations: Conversations.list, setConversationId}} messages={{messages, setMessages, loadMessages}}/>

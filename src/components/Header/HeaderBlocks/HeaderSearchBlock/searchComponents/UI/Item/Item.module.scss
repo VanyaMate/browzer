@@ -1,0 +1,15 @@
+@import "../../../../../../../utils/colors";
+@import "../../../../../../../utils/sizes";
+
+.item {
+    padding: $commonMargin;
+    background: $darkBlue;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    color: $white;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}

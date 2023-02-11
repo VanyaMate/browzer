@@ -27,7 +27,6 @@ const setApi = function (app, db) {
                         .then((body) => {
                             getConversationMembers(db, request.data).then((members) => {
                                 members.forEach((user) => {
-                                    console.log(user.login);
                                     app.socketConnections[user.login]?.send(body.data.message);
                                 });
                             });

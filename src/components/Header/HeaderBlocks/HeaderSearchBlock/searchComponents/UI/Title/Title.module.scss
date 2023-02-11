@@ -1,0 +1,10 @@
+@import "../../../../../../../utils/colors";
+
+.title {
+    font-size: 16px;
+    font-weight: bold;
+    color: $blue;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-bottom: 3px dotted $darkBlue;
+}

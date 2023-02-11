@@ -79,6 +79,21 @@ const conversationsApi = {
         url: '/api/conversations/getList',
         params: {},
         ret: {}
+    },
+    create: {
+        url: '/api/conversations/create',
+        params: {},
+        ret: {}
+    },
+    change: {
+        url: '/api/conversations/change',
+        params: {},
+        ret: {}
+    },
+    delete: {
+        url: '/api/conversations/delete',
+        params: {},
+        ret: {}
     }
 };
 
