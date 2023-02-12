@@ -27,12 +27,10 @@ const UsersSearch = ({ query }) => {
         }).catch((error) => console.log(error))
     }
 
-    const createConversationWith = async function (login) {
+    const createConversationWith = async function (data) {
         return await fetch(`${serverUrl}/api/conversations/create`, {
             method: 'post',
-            body: JSON.stringify({
-                members: [userData.user.userData.login, login]
-            }),
+            body: JSON.stringify(data),
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -69,7 +67,12 @@ const UsersSearch = ({ query }) => {
                             <Button
                                 validation={true}
                                 onClick={() => {
-                                    createConversationWith(result.login).then();
+                                    createConversationWith({
+                                        type: 'single',
+                                        members: [result.login],
+                                        login: userData.user.userData.login,
+                                        sessionId: userData.user.sessionId
+                                    }).then();
                                 }}
                             >Соо</Button>
                         </div>

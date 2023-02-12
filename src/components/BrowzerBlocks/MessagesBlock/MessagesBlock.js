@@ -108,76 +108,121 @@ const MessagesBlock = observer(({ data, activeOption, options: {blockOptions, se
 
     return (
         <div className={[css.messageBlock, activeOption === data ? '' : css.hidden].join(' ')}>
-            <div className={css.messagesSide}>
-                <button
-                    className={[css.messageSendButton, message !== '' ? css.active : ''].join(' ')}
-                    onClick={sendMessage}
-                >
-                    Отправить
-                </button>
-                <Button validation={true} onClick={() => {
-                    fetch(`${serverUrl}/api/conversations/delete`, {
-                        method: 'post',
-                        body: JSON.stringify({
-                            conversationId: conversationId
-                        }),
-                        headers: {
-                            'Content-Type': 'application/json'
+            {
+                conversationId && Conversations.list.some((item) => item.id === conversationId)
+                    ? <div className={css.messagesSide}>
+                    <button
+                        className={[css.messageSendButton, message !== '' ? css.active : ''].join(' ')}
+                        onClick={sendMessage}
+                    >
+                        Отправить
+                    </button>
+                    <Button validation={true} onClick={() => {
+                        fetch(`${serverUrl}/api/conversations/delete`, {
+                            method: 'post',
+                            body: JSON.stringify({
+                                conversationId: conversationId
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then();
+                    }}>Удалить</Button>
+                    <textarea
+                        type={'text'}
+                        className={css.messageInput}
+                        value={message}
+                        onInput={inputMessage}
+                        onKeyDown={
+                            (event) =>
+                                (event.key === 'Enter') && (event.preventDefault() || sendMessage())
                         }
-                    }).then();
-                }}>Удалить</Button>
-                <textarea
-                    type={'text'}
-                    className={css.messageInput}
-                    value={message}
-                    onInput={inputMessage}
-                    onKeyDown={
-                        (event) =>
-                            (event.key === 'Enter') && (event.preventDefault() || sendMessage())
-                    }
-                />
-                <ScrollContainer
-                    className={css.messagesScrollContainer}
-                    containerClassName={css.messagesContainer}
-                    addingMessage={[startAddingMessage, setStartAddingMessage]}
-                    onScroll={(scroll) => {
-                        if (scroll <= 1) {
-                            const conversation = Conversations.getById(conversationId);
-                            if (conversation.messagesLoading) return;
-                            conversation.messagesLoading = true;
-                            loadMessages(conversationId, (offset + 1) * defaultLimit, defaultLimit).then((updatedMessageList) => {
-                                if (updatedMessageList.length) {
-                                    setOffset(offset + 1);
-                                    setStartAddingMessage(true);
-                                    const conversation = Conversations.getById(conversationId);
-                                    if (conversation) {
-                                        conversation.messages = [...conversation.messages, ...updatedMessageList];
-                                        conversation.messagesLoading = false;
+                    />
+                    <ScrollContainer
+                        className={css.messagesScrollContainer}
+                        containerClassName={css.messagesContainer}
+                        addingMessage={[startAddingMessage, setStartAddingMessage]}
+                        onScroll={(scroll) => {
+                            if (scroll <= 300) {
+                                const conversation = Conversations.getById(conversationId);
+                                if (conversation.messagesLoading) return;
+                                conversation.messagesLoading = true;
+                                loadMessages(conversationId, (offset + 1) * defaultLimit, defaultLimit).then((updatedMessageList) => {
+                                    if (updatedMessageList.length) {
+                                        setOffset(offset + 1);
+                                        setStartAddingMessage(true);
+                                        const conversation = Conversations.getById(conversationId);
+                                        if (conversation) {
+                                            conversation.messages = [...conversation.messages, ...updatedMessageList];
+                                            conversation.messagesLoading = false;
+                                        }
+                                    } else {
+                                        conversation.allLoaded = true;
                                     }
+                                })
+                            }
+                        }}
+                    >
+                        {
+                            (() => {
+                                const conversation = Conversations.getById(conversationId);
+                                if (conversation && conversation.messages.length) {
+                                    return conversation.messages.map((messageData) => {
+                                        return <Message
+                                            key={messageData.id}
+                                            data={messageData}
+                                            login={userData.user.userData.login}
+                                        />
+                                    })
+                                } else {
+                                    return <div className={css.messagesClearConversation}>
+                                        Так пусто...  ┐(‘～` )┌
+                                    </div>;
                                 }
-                            })
+                            })()
                         }
-                    }}
-                >
-                    {
-                        Conversations.getById(conversationId)?.messages.map((messageData) => {
-                            return <Message
-                                key={messageData.id}
-                                data={messageData}
-                                login={userData.user.userData.login}
-                            />
-                        })
-                    }
-                    <h1>Load...</h1>
-                </ScrollContainer>
-            </div>
+                        {
+                            (() => {
+                                const conversation = Conversations.getById(conversationId);
+                                let message = '';
+                                let showed = false;
+                                if (conversation.messagesLoading) {
+                                    if (conversation.allLoaded) {
+                                        message = 'Больше нет ¯\_(ツ)_/¯';
+                                    } else {
+                                        message = 'Грузим ‿︵‿ヽ(°□° )ノ︵‿︵';
+                                    }
+
+                                    showed = true;
+                                }
+
+                                return <div className={[css.messagesEndNotification, showed?css.e_showed:''].join(' ')}>{message}</div>;
+                            })()
+                        }
+                    </ScrollContainer>
+                </div>
+                    : <div className={css.messagesNoSelected}>
+                        Беседа не выбрана ლ(ಠ_ಠ ლ)
+                    </div>
+            }
             <div className={[css.conversationsSide, openedConv ? css.c_opened : ''].join(' ')}>
                 <Button
                     onClick={() => setOpenedConv(!openedConv)}
                     className={css.c_button}
                     validation={true}
                 >Open</Button>
-                <ConversationBlock conversations={{conversations: Conversations.list, setConversationId}} messages={{messages, setMessages, loadMessages}}/>
+                <ConversationBlock
+                    conversations={{
+                        conversations: Conversations.list,
+                        setConversationId,
+                        conversationId
+                    }}
+                    messages={{
+                        messages,
+                        setMessages,
+                        loadMessages
+                    }}
+                />
             </div>
         </div>
     );

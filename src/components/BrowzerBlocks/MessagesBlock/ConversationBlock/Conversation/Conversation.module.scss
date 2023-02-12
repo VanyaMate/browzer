@@ -13,10 +13,12 @@
     transition: .1s;
     padding-right: 0;
 
-    &:hover {
+    &:hover,
+    &.activeItem {
         cursor: pointer;
-        padding-right: 5px;
+        padding-right: 2px;
         border-right: 2px dotted $blue;
+        border-radius: 10px;
 
         & .avatar {
             opacity: .6;
@@ -38,13 +40,18 @@
         & .login {
             width: calc(100% - #{$commonMargin});
             margin: 0 5px;
-            color: $liteGray;
+            color: $gray;
+            transition: .1s;
         }
 
         & .lastMessage {
             width: calc(100% - #{$commonMargin});
+            max-width: 90px;
+            max-height: 14px;
+            overflow: hidden;
             margin: 5px 5px 0;
-            color: $white;
+            color: $liteGray;
+            transition: .1s;
         }
     }
 

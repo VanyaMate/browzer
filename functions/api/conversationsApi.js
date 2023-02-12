@@ -8,6 +8,9 @@ const {
     createConversation,
     deleteConversation
 } = require('./methods/conversations').methods;
+const {
+    checkLoginSessionId
+} = require('./methods/login').methods;
 
 
 const setApi = function (app, db) {
@@ -64,15 +67,20 @@ const setApi = function (app, db) {
 
     app.post(conversationsApi.create.url, (req, res) => {
         requestHandler(req, res, async(request) => {
-            createConversation(db, request.data)
+            checkLoginSessionId(db, request.data)
                 .then((body) => {
-                    request.data.members.forEach((login) => {
-                        app.socketConnections[login]?.send({
-                            type: 'new-conversation',
-                            data: body
+                    createConversation(db, request.data)
+                        .then((body) => {
+                            body.data.info.members.forEach((user) => {
+                                const login = user.userData.login;
+                                app.socketConnections[login]?.send({
+                                    type: 'new-conversation',
+                                    data: body
+                                })
+                            })
+                            res.status(200).send(body)
                         })
-                    })
-                    res.status(200).send(body)
+                        .catch((body) => res.status(200).send(body));
                 })
                 .catch((body) => res.status(200).send(body));
         })

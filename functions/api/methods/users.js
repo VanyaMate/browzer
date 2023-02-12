@@ -26,7 +26,6 @@ const validateUserData = function (userData) {
 
     return {error: false, data: {}};
 }
-
 const validateChangeUserData = function (changedUserData) {
     switch (changedUserData.name) {
         case 'personalInfo':
@@ -44,7 +43,6 @@ const validateChangeUserData = function (changedUserData) {
             return false;
     }
 }
-
 const validateUserAccess = function (db, data) {
     return new Promise(async (resolve, reject) => {
         const user = (await db.collection('users').doc(data.login).get()).data()
@@ -123,7 +121,10 @@ const createUserAccount = function (db, data) {
                         avatar: 'https://t3.ftcdn.net/jpg/02/43/51/48/360_F_243514868_XDIMJHNNJYKLRST05XnnTj0MBpC4hdT5.jpg',
                         email: data.email,
                         sessionId: sessionId,
-                        creationDate: Date.now()
+                        creationDate: Date.now(),
+                        preference: {
+                            conversations: 'all'
+                        }
                     };
 
                     await db

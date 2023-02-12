@@ -1,5 +1,3 @@
-const {query} = require("express");
-const {queryAllByAttribute} = require("@testing-library/react");
 const {getMessagesFromConversation} = require('./messages').methods;
 const {getPublicUserDataByLogin, getPublicUserData} = require('./users').methods;
 
@@ -61,49 +59,115 @@ const validateConversationsListUserAccess = function (db, data) {
         });
     });
 }
+const validateMembersToAdd = function (db, data) {
+    return new Promise((resolve, reject) =>
+        Promise.all(data.members.map((login) =>
+            new Promise(async (resolve, reject) => {
+                await getPublicUserDataByLogin(db, {login})
+                    .then((body) => {
+                        if (body.data.preference.conversations === 'all') {
+                            resolve();
+                        } else if (body.data.preference.conversations === 'friends') {
+                            if (body.data.friends.some((login) => login === data.login)) {
+                                resolve();
+                            } else {
+                                reject();
+                            }
+                        } else {
+                            // TODO: Change to reject after reset DB
+                            resolve();
+                        }
+                    })
+                    .catch(reject);
+        }))).then(resolve).catch(reject)
+    );
+}
 const validateConversationData = function (db, data) {
-
+    return Promise.all([
+        validateMembersToAdd(db, data)
+    ])
+}
+const getConversationPreferenceByType = function (data) {
+    switch (data.type) {
+        case 'single':
+            return {
+                members: [...data.members, data.login].map((login) => ({login})),
+                type: 'single',
+                creationTime: Date.now()
+            }
+            break;
+        case 'group':
+            return {
+                members: [
+                    ...data.members.map((login) => {
+                        return {
+                            login,
+                            role: 'user',
+                            addTime: Date.now()
+                        }
+                    }),
+                    {
+                        login: data.login,
+                        role: 'admin',
+                        addTime: Date.now()
+                    }
+                ],
+                type: 'group',
+                icon: 'https://www.zmoji.me/wp-content/uploads/2019/11/sige--1024x988.jpg',
+                name: 'Conversation Name ' + Math.random().toFixed(1),
+                creationTime: Date.now()
+            }
+            break;
+        default:
+            return false;
+    }
 }
 
 const createConversation = function (db, data) {
-    // TODO: Не безопасно
     return new Promise(async (resolve, reject) => {
-        const conversation = await db.collection('conversations').add({
-            members: data.members.map((login) => { return {login}}),
-            type: 'single',
-            creationTime: Date.now()
-        });
+        validateConversationData(db, data)
+            .then(async () => {
+                const conversationPref = getConversationPreferenceByType(data);
+                const conversation = await db.collection('conversations').add(conversationPref);
+                const members = await Promise.all(conversationPref.members.map(async ({login}) => {
+                    const query = await db.collection('users').doc(login).get();
+                    const userData = query.data();
+                    if (userData.conversations) {
+                        userData.conversations.push(conversation.id);
+                    } else {
+                        userData.conversations = [conversation.id];
+                    }
+                    await db.collection('users').doc(login).set(userData);
+                    return {userData: getPublicUserData(userData)};
+                }));
 
-        const members = await Promise.all(data.members.map(async (login) => {
-            const query = await db.collection('users').doc(login).get();
-            const userData = query.data();
-            if (userData.conversations) {
-                userData.conversations.push(conversation.id);
-            } else {
-                userData.conversations = [conversation.id];
-            }
-            await db.collection('users').doc(login).set(userData);
-            return {userData: getPublicUserData(userData), info: data.members};
-        }));
+                conversationPref.members = members;
 
-        if (conversation) {
-            resolve({
-                error: false,
-                data: {
-                    id: conversation.id,
-                    info: {
-                        members,
-                        type: 'single'
-                    },
-                    messages: []
+                if (conversation) {
+                    resolve({
+                        error: false,
+                        data: {
+                            id: conversation.id,
+                            info: conversationPref,
+                            messages: []
+                        }
+                    })
+                } else {
+                    reject({
+                        error: true,
+                        data: error
+                    })
                 }
             })
-        } else {
-            reject({
-                error: true,
-                data: error
+            .catch(() => {
+                console.log('-------------- Catch');
+                reject({
+                    error: true,
+                    data: {
+                        message: 'bad request'
+                    }
+                })
             })
-        }
     });
 }
 const getConversationMembers = async function (db, data) {

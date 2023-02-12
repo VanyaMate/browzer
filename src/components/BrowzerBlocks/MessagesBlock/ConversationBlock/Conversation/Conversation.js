@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import css from './Conversation.module.scss';
 import {UserData} from "../../../../../App";
 
-const Conversation = ({ data, messages, setConversationId }) => {
+const Conversation = ({ data, messages, setConversationId, active }) => {
     const userData = useContext(UserData);
 
     const conversationData = data.info.type === 'group'
@@ -13,7 +13,7 @@ const Conversation = ({ data, messages, setConversationId }) => {
 
     return (
         <div
-            className={css.conversationItem}
+            className={[css.conversationItem, active ? css.activeItem : ''].join(' ')}
             style={{top: data.top}}
             onClick={() => {
                 setConversationId(data.id);
