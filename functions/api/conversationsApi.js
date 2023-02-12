@@ -5,7 +5,8 @@ const {
     getConversationsList,
     validateConversationUserAccess,
     validateConversationsListUserAccess,
-    createConversation
+    createConversation,
+    deleteConversation
 } = require('./methods/conversations').methods;
 
 
@@ -64,10 +65,38 @@ const setApi = function (app, db) {
     app.post(conversationsApi.create.url, (req, res) => {
         requestHandler(req, res, async(request) => {
             createConversation(db, request.data)
-                .then((body) => res.status(200).send(body))
+                .then((body) => {
+                    request.data.members.forEach((login) => {
+                        app.socketConnections[login]?.send({
+                            type: 'new-conversation',
+                            data: body
+                        })
+                    })
+                    res.status(200).send(body)
+                })
                 .catch((body) => res.status(200).send(body));
         })
     });
+
+    app.post(conversationsApi.delete.url, (req, res) => {
+        requestHandler(req, res, async(request) => {
+            deleteConversation(db, request.data)
+                .then((body) => {
+                    body.data.members.forEach(({ login }) => {
+                        app.socketConnections[login]?.send({
+                            type: 'delete-conversation',
+                            data: {
+                                id: body.data.id
+                            }
+                        })
+                    })
+                    res.status(200).send(body);
+                })
+                .catch(body => {
+                    res.status(200).send(body)
+                })
+        })
+    })
 }
 
 exports.setApi = setApi;

@@ -115,6 +115,17 @@ const MessagesBlock = observer(({ data, activeOption, options: {blockOptions, se
                 >
                     Отправить
                 </button>
+                <Button validation={true} onClick={() => {
+                    fetch(`${serverUrl}/api/conversations/delete`, {
+                        method: 'post',
+                        body: JSON.stringify({
+                            conversationId: conversationId
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then();
+                }}>Удалить</Button>
                 <textarea
                     type={'text'}
                     className={css.messageInput}

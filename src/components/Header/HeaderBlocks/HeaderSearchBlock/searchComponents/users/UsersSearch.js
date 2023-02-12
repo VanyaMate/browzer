@@ -69,9 +69,7 @@ const UsersSearch = ({ query }) => {
                             <Button
                                 validation={true}
                                 onClick={() => {
-                                    createConversationWith(result.login).then((data) => {
-                                        Conversations.list.push(data);
-                                    })
+                                    createConversationWith(result.login).then();
                                 }}
                             >Соо</Button>
                         </div>

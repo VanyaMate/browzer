@@ -13,15 +13,31 @@ class Conversations {
         return this.list.filter((conv) => conv.id === id)[0];
     }
 
-    setSocket (socket) {
-        socket.on('message', (data) => {
-            if (data.convId) {
-                const conversation = this.getById(data.convId);
+    socketMessageHandler (body) {
+        switch (body.type) {
+            case 'message':
+                const conversation = this.getById(body.data.convId);
                 if (conversation) {
-                    conversation.messages = [data, ...conversation.messages];
+                    conversation.messages = [body.data, ...conversation.messages];
                 }
-            }
-        });
+                break;
+            case 'new-conversation':
+                this.list.push(body.data.data);
+                break;
+            case 'delete-conversation':
+                for (let i = 0; i < this.list.length; i++) {
+                    if (this.list[i].id === body.data.id) {
+                        this.list.splice(i, 1);
+                        break;
+                    }
+                }
+                break;
+            default: break;
+        }
+    }
+
+    setSocket (socket) {
+        socket.on('message', this.socketMessageHandler.bind(this));
     }
 
     get needToGetConversationData () {

@@ -172,12 +172,39 @@ const getConversationsList = async function (db, data) {
         return conversations;
     });
 }
+const deleteConversation = async function (db, data) {
+    const query = db.collection('conversations').doc(data.conversationId);
+    const conversation = (await query.get()).data();
+    const members = conversation.members;
+    const deleted = await query.delete();
+
+    const userChanges = await Promise.all(members.map(async ({login}) => {
+        const query = await db.collection('users').doc(login).get();
+        const userData = query.data();
+        if (userData.conversations) {
+            userData.conversations = userData.conversations.filter(
+                (conversationId) => conversationId !== data.conversationId
+            );
+        }
+        return await db.collection('users').doc(login).set(userData);
+    }));
+
+    return {
+        error: false,
+        data: {
+            message: 'deleted',
+            members: members,
+            id: data.conversationId
+        }
+    }
+}
 
 exports.methods = {
     getConversation,
     getConversationsList,
     getConversationMembers,
     createConversation,
+    deleteConversation,
     validateConversationUserAccess,
     validateConversationsListUserAccess
 }
