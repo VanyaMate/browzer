@@ -8,6 +8,7 @@ const usersApi = require('./api/usersApi.js');
 const loginApi = require('./api/loginApi.js');
 const conversationApi = require('./api/conversationsApi.js');
 const messagesApi = require('./api/messagesApi.js');
+const friendsApi = require('./api/friendsApi.js');
 const socketServer = require('http').createServer(app);
 const { Server } = require('socket.io');
 const { validateUserAccess } = require('../functions/api/methods/users').methods;
@@ -26,6 +27,7 @@ usersApi.setApi(app, db);
 loginApi.setApi(app, db);
 conversationApi.setApi(app, db);
 messagesApi.setApi(app, db);
+friendsApi.setApi(app, db);
 
 const io = new Server(socketServer, {
     // https://browzer.onrender.com

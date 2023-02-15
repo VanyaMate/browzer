@@ -9,8 +9,12 @@ const HeaderSearchBlock = () => {
     const [openedList, setOpenedList] = useState(false);
     const [resultOpened, setResultOpened] = useState(false);
 
-    const toggleList = function () {
+    const toggleSearchTypeList = function () {
         setOpenedList(!openedList);
+    }
+
+    const toggleResultList = function () {
+        setResultOpened(!resultOpened);
     }
 
     const setType = function ({ target }) {
@@ -32,11 +36,11 @@ const HeaderSearchBlock = () => {
             }
         }, 250);
         return () => clearTimeout(timer);
-    }, [searchQuery])
+    }, [searchQuery, searchType])
 
     return (
         <div className={css.block}>
-            <div className={css.searchTypeSelect} onClick={toggleList}>
+            <div className={css.searchTypeSelect} onClick={toggleSearchTypeList}>
                 <div className={css.searchType}>
                     /{searchType}
                 </div>
@@ -58,7 +62,7 @@ const HeaderSearchBlock = () => {
             <div className={css.searchInput}>
                 <input type={'text'} placeholder={'Поиск'} value={searchQuery} onInput={inputHandler}/>
             </div>
-            <div className={css.searchButton}>?</div>
+            <div className={css.searchButton} onClick={toggleResultList}>?</div>
             <div className={[css.searchResult, resultOpened?css.r_opened:''].join(' ')}>
                 {
                     searchTypeList.filter((queryItem) =>

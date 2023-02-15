@@ -39,9 +39,12 @@
 
         & .login {
             width: calc(100% - #{$commonMargin});
+            overflow: hidden;
+            text-overflow: ellipsis;
             margin: 0 5px;
             color: $gray;
             transition: .1s;
+            text-align: left;
         }
 
         & .lastMessage {
@@ -52,6 +55,7 @@
             margin: 5px 5px 0;
             color: $liteGray;
             transition: .1s;
+            text-align: left;
         }
     }
 

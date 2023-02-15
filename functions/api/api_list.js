@@ -110,9 +110,23 @@ const messagesApi = {
     }
 }
 
+const friendsApi = {
+    add: {
+        url: '/api/friends/add',
+        params: {},
+        ret: {}
+    },
+    remove: {
+        url: '/api/friends/remove',
+        params: {},
+        ret: {}
+    }
+}
+
 exports.list = {
     usersApi,
     loginApi,
     conversationsApi,
-    messagesApi
+    messagesApi,
+    friendsApi
 }

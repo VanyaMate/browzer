@@ -53,6 +53,10 @@ const UsersSearch = ({ query }) => {
         });
     }
 
+    const checkValidationConversationButton = function (conversationPref) {
+
+    }
+
     return (
         <div>
             <Title>Пользователи</Title>
@@ -65,7 +69,7 @@ const UsersSearch = ({ query }) => {
                         </div>
                         <div className={css.resultControl}>
                             <Button
-                                validation={true}
+                                validation={result.preference.conversations === 'all'}
                                 onClick={() => {
                                     createConversationWith({
                                         type: 'single',
@@ -75,6 +79,17 @@ const UsersSearch = ({ query }) => {
                                     }).then();
                                 }}
                             >Соо</Button>
+                            <Button
+                                validation={result.preference.friends === 'all'}
+                                onClick={() => {
+                                    createConversationWith({
+                                        type: 'single',
+                                        members: [result.login],
+                                        login: userData.user.userData.login,
+                                        sessionId: userData.user.sessionId
+                                    }).then();
+                                }}
+                            >Дрз</Button>
                         </div>
                     </Item>) : 'No find'
             }

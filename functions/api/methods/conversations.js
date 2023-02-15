@@ -160,7 +160,6 @@ const createConversation = function (db, data) {
                 }
             })
             .catch(() => {
-                console.log('-------------- Catch');
                 reject({
                     error: true,
                     data: {

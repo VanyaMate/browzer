@@ -57,6 +57,7 @@ $buttonWidth: $searchHeight;
     position: absolute;
     top: calc(100% + 5px);
     left: 0;
+    z-index: 10;
     width: calc(#{$selectWidth} + 10px);
     background: $darkGray;
     box-shadow: $defaultBoxShadow;

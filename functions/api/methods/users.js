@@ -49,7 +49,9 @@ const validateUserAccess = function (db, data) {
         if (user !== undefined && user.sessionId === data.sessionId) {
             resolve({
                 error: false,
-                data: {}
+                data: {
+                    user
+                }
             })
         } else {
             reject({
@@ -118,12 +120,15 @@ const createUserAccount = function (db, data) {
                         },
                         conversations: [],
                         friends: [],
+                        friendsOutRequests: [],
+                        friendsInRequests: [],
                         avatar: 'https://t3.ftcdn.net/jpg/02/43/51/48/360_F_243514868_XDIMJHNNJYKLRST05XnnTj0MBpC4hdT5.jpg',
                         email: data.email,
                         sessionId: sessionId,
                         creationDate: Date.now(),
                         preference: {
-                            conversations: 'all'
+                            conversations: 'all',
+                            friends: 'all'
                         }
                     };
 
