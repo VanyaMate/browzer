@@ -12,6 +12,7 @@ const friendsApi = require('./api/friendsApi.js');
 const socketServer = require('http').createServer(app);
 const { Server } = require('socket.io');
 const { validateUserAccess } = require('../functions/api/methods/users').methods;
+const { getPrivateUserData } = require('../functions/utils/requestMethods').requestMethods;
 
 app.use(cors({ origin: true }));
 app.use(express.json())
@@ -45,17 +46,43 @@ const connections = {
 
 app.socketConnections = connections;
 
+const removeConnectionAfter2Minute = function (login) {
+    return setTimeout(() => {
+        delete connections[login];
+    }, 1000 * 120) // delete socket from list after 100 seconds
+}
+
 io.on('connection', (socket) => {
     console.log('connection', socket.id);
     socket.on('message', (data) => {
-        console.log('Message', data);
-        if (data.type === 'auth') {
+        console.log(data);
+        if (data.type === 'ping') {
+            if (connections[data.login]) {
+                clearTimeout(connections[data.login].removeTimer);
+                connections[data.login].removeTimer = removeConnectionAfter2Minute(data.login);
+                socket.send({
+                    type: 'pong'
+                })
+            } else {
+                socket.send({
+                    error: true,
+                    message: 'need auth'
+                })
+            }
+        } else if (data.type === 'auth') {
             validateUserAccess(db, {
                 login: data.login,
                 sessionId: data.sessionId
             }).then((response) => {
+                clearTimeout(connections[data.login] && connections[data.login].removeTimer);
                 connections[data.login] = socket;
-                socket.send(response);
+                connections[data.login].removeTimer = removeConnectionAfter2Minute(data.login);
+                socket.send({
+                    error: false,
+                    data: {
+                        user: getPrivateUserData(response.data.user)
+                    }
+                });
             }).catch((response) => {
                 socket.send(response);
             })

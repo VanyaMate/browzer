@@ -94,6 +94,20 @@ const RegistrationForm = ({ socket }) => {
             if (!error) {
                 sessionStorage.setItem(sessionStorageUserData, JSON.stringify(data));
                 userData.setUser(data);
+
+                socket.send({
+                    type: 'auth',
+                    login: data.userData.login,
+                    sessionId: data.sessionId
+                })
+
+                clearInterval(window.socketPingInterval);
+                window.socketPingInterval = setInterval(() => {
+                    socket.send({
+                        type: 'ping',
+                        login: data.userData.login
+                    })
+                }, 10000);
             }
         });
     }

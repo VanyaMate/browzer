@@ -3,6 +3,7 @@ import {UserData} from "../../../../App";
 import {sessionStorageUserData} from "../../../../utils/conts";
 import Button from "../../../UI/Button/Button";
 import css from './HeaderProfileBlock.module.scss';
+import ProfileFriends from "./ProfileFriends/ProfileFriends";
 
 const HeaderProfileBlock = () => {
     const userData = useContext(UserData);
@@ -11,10 +12,12 @@ const HeaderProfileBlock = () => {
     const signOut = function () {
         userData.setUser(null);
         sessionStorage.removeItem(sessionStorageUserData);
+        clearInterval(window.socketPingInterval);
     }
 
     return (
         <div className={css.block}>
+            <ProfileFriends/>
             <div className={css.userLogin}>
                 {userData.user.userData.login}
             </div>

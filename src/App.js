@@ -3,6 +3,7 @@ import ContentBrowser from "./components/ContentBrowser/ContentBrowser";
 import Header from "./components/Header/Header";
 import LoginPage from "./components/LoginPage/LoginPage";
 import {serverUrl, sessionStorageUserData} from "./utils/conts";
+import Friends from "./store/Friends";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA-1tMgD7SbE0O2TDeR39lPVwtB75DtI6Q",
@@ -35,9 +36,9 @@ const App = ({ socket }) => {
                 'Content-Type': 'application/json'
             }
         }).then(async (response) => {
-            const body = await response.text();
-            const data = JSON.parse(body);
+            const data = await response.json();
             if (data.error === false) {
+                console.log('DATA: ', data);
                 return data.data;
             }
             return false;
@@ -48,17 +49,44 @@ const App = ({ socket }) => {
     }
 
     useEffect(() => {
+        socket.handlers.delete(this);
+        socket.handlers.set(this, (data) => {
+            if (data.error && data.message === 'need auth') {
+                const userData = JSON.parse(savedUserData || '{}');
+                userData.userData && socket.send({
+                    type: 'auth',
+                    login: userData.userData.login,
+                    sessionId: userData.sessionId
+                });
+            }
+        })
         if (loading) return;
         if (savedDataExist()) {
             const userData = JSON.parse(savedUserData);
             loading = true;
             checkUserData(userData).then((data) => {
-                console.log(userData);
                 socket.send({
                     type: 'auth',
-                    login: userData.userData.login,
-                    sessionId: userData.sessionId
+                    login: data.userData.login,
+                    sessionId: data.sessionId
                 });
+
+                clearInterval(window.socketPingInterval);
+                window.socketPingInterval = setInterval(() => {
+                    socket.send({
+                        type: 'ping',
+                        login: data.userData.login
+                    })
+                }, 10000);
+
+                Friends.list = data.userData.friends;
+                Friends.inList = data.userData.friendsInRequests;
+                Friends.outList = data.userData.friendsOutRequests;
+
+                console.log('list', data.userData.friends);
+                console.log('inList', data.userData.friendsInRequests);
+                console.log('outList', data.userData.friendsOutRequests);
+
                 setUser(data || null);
                 loading = false;
             }).catch(() => {

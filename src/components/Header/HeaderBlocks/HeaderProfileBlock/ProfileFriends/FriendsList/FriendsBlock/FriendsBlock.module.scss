@@ -1,0 +1,42 @@
+.container {
+    min-height: 20px;
+    max-height: 210px;
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    overflow: auto;
+    margin-bottom: 10px;
+    font-size: 14px;
+
+    & .item {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    & .userInfo {
+        display: flex;
+        align-items: center;
+        width: calc(100% - 150px);
+
+        & .userLogin {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        & .userAvatar {
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
+            border-radius: 50%;
+        }
+    }
+
+    & .controlButtons {
+        height: 30px;
+
+        & .button {
+            height: 100%;
+            margin-left: 5px;
+        }
+    }
+}

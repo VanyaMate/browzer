@@ -58,6 +58,15 @@ const LoginForm = ({ socket }) => {
                     login: bodyData.data.userData.login,
                     sessionId: bodyData.data.sessionId
                 })
+
+                clearInterval(window.socketPingInterval);
+                window.socketPingInterval = setInterval(() => {
+                    socket.send({
+                        type: 'ping',
+                        login: bodyData.data.userData.login
+                    })
+                }, 10000);
+
                 return;
             }
 

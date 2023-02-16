@@ -39,6 +39,18 @@ const UsersSearch = ({ query }) => {
         });
     }
 
+    const requestFriendWith = async function (data) {
+        return await fetch(`${serverUrl}/api/friends/add`, {
+            method: 'post',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(async(response) => {
+            return (await response.json()).data;
+        });
+    }
+
     useEffect(() => {
         window.addEventListener('init-search', init);
 
@@ -82,11 +94,10 @@ const UsersSearch = ({ query }) => {
                             <Button
                                 validation={result.preference.friends === 'all'}
                                 onClick={() => {
-                                    createConversationWith({
-                                        type: 'single',
-                                        members: [result.login],
+                                    requestFriendWith({
                                         login: userData.user.userData.login,
-                                        sessionId: userData.user.sessionId
+                                        sessionId: userData.user.sessionId,
+                                        addLogin: result.login
                                     }).then();
                                 }}
                             >Дрз</Button>

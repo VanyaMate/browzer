@@ -6,6 +6,15 @@ const {validateUserAccess} = require('./methods/users').methods;
 const setApi = function (app, db) {
     app.post(friendsApi.add.url, (req, res) => {
         requestHandler(req, res, (response) => {
+            if (response.data.login === response.data.addLogin) {
+                res.status(200).send({
+                    error: true,
+                    data: {
+                        message: 'bad request'
+                    }
+                })
+                return;
+            }
             validateUserAccess(db, response.data)
                 .then(({ data: { user }}) => {
                     response.data.user = user;
@@ -51,6 +60,15 @@ const setApi = function (app, db) {
 
     app.post(friendsApi.remove.url, (req, res) => {
         requestHandler(req, res, (response) => {
+            if (response.data.login === response.data.removeLogin) {
+                res.status(200).send({
+                    error: true,
+                    data: {
+                        message: 'bad request'
+                    }
+                })
+                return;
+            }
             validateUserAccess(db, response.data)
                 .then(({ data: { user }}) => {
                     response.data.user = user;

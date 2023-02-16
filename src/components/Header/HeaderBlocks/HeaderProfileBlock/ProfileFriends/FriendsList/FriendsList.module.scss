@@ -1,0 +1,22 @@
+@import "../../../../../../utils/colors";
+@import "../../../../../../utils/sizes";
+
+.container {
+    position: absolute;
+    width: 100%;
+    top: calc(100% + 5px);
+    right: 0;
+    padding: 0 $commonMargin;
+    background: $darkGray;
+    box-shadow: $defaultBoxShadow;
+    transition: .1s;
+    height: 0px;
+    overflow: hidden;
+    opacity: 0;
+
+    &.opened {
+        padding: $commonMargin;
+        height: auto;
+        opacity: 1;
+    }
+}
