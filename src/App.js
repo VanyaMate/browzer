@@ -83,10 +83,6 @@ const App = ({ socket }) => {
                 Friends.inList = data.userData.friendsInRequests;
                 Friends.outList = data.userData.friendsOutRequests;
 
-                console.log('list', data.userData.friends);
-                console.log('inList', data.userData.friendsInRequests);
-                console.log('outList', data.userData.friendsOutRequests);
-
                 setUser(data || null);
                 loading = false;
             }).catch(() => {

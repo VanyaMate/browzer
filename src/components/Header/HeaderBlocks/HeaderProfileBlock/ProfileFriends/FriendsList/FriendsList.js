@@ -6,7 +6,6 @@ import Friends from "../../../../../../store/Friends";
 import {observer} from "mobx-react-lite";
 
 const FriendsList = observer(({ open }) => {
-    console.log(JSON.parse(JSON.stringify(Friends)))
     return (
         <div className={[css.container, open?css.opened:''].join(' ')}>
             <Title>Друзья</Title>

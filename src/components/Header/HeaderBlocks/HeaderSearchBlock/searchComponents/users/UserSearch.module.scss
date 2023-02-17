@@ -1,3 +1,6 @@
+@import "../../../../../../utils/colors";
+@import "../../../../../../utils/sizes";
+
 .resultItem {
     display: flex;
     justify-content: space-between;
@@ -22,8 +25,33 @@
     }
 
     .resultControl {
-        .resultButton {
+        display: flex;
 
+        .resultButton {
+            width: 30px;
+            height: 30px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            transition: .1s;
+            border-radius: 50%;
+
+            &:hover {
+                background: $darkGray;
+
+                & .resultAddIcon {
+                    filter: invert(1);
+                }
+            }
+        }
+
+        .resultAddIcon {
+            width: 20px;
+            height: 20px;
+            filter: invert(.8);
+            transition: .1s;
         }
     }
 }

@@ -16,6 +16,7 @@ const { getPrivateUserData } = require('../functions/utils/requestMethods').requ
 
 app.use(cors({ origin: true }));
 app.use(express.json())
+app.use(express.static(__dirname + '/assets'));
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),

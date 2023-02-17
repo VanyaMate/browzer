@@ -6,6 +6,7 @@ import {useContext, useEffect, useState} from "react";
 import {UserData} from "../../App";
 import {checkEmail, checkLogin, checkName, checkPassword} from "../../utils/Checker";
 import {serverUrl, sessionStorageUserData} from "../../utils/conts";
+import Friends from "../../store/Friends";
 
 const RegistrationForm = ({ socket }) => {
     const userData = useContext(UserData);
@@ -108,6 +109,10 @@ const RegistrationForm = ({ socket }) => {
                         login: data.userData.login
                     })
                 }, 10000);
+
+                Friends.list = data.userData.friends;
+                Friends.inList = data.userData.friendsInRequests;
+                Friends.outList = data.userData.friendsOutRequests;
             }
         });
     }

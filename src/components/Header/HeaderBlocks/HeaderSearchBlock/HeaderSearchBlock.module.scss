@@ -123,9 +123,27 @@ $buttonWidth: $searchHeight;
     cursor: pointer;
     transition: .1s;
 
+    & .icon {
+        width: 14px;
+        height: 14px;
+        filter: invert(.4);
+        transform: rotate(270deg);
+        transition: .1s;
+        user-select: none;
+
+        &.i_opened {
+            transform: rotate(90deg);
+            filter: invert(1);
+        }
+    }
+
     &:hover {
         background: $blue;
         color: $white;
+
+        & .icon {
+            filter: invert(1);
+        }
     }
 }
 

@@ -117,17 +117,6 @@ const MessagesBlock = observer(({ data, activeOption, options: {blockOptions, se
                     >
                         Отправить
                     </button>
-                    <Button validation={true} onClick={() => {
-                        fetch(`${serverUrl}/api/conversations/delete`, {
-                            method: 'post',
-                            body: JSON.stringify({
-                                conversationId: conversationId
-                            }),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then();
-                    }}>Удалить</Button>
                     <textarea
                         type={'text'}
                         className={css.messageInput}
@@ -206,11 +195,32 @@ const MessagesBlock = observer(({ data, activeOption, options: {blockOptions, se
                     </div>
             }
             <div className={[css.conversationsSide, openedConv ? css.c_opened : ''].join(' ')}>
-                <Button
-                    onClick={() => setOpenedConv(!openedConv)}
-                    className={css.c_button}
-                    validation={true}
-                >Open</Button>
+                <div className={css.controlButtons}>
+                    <div className={css.leftSideButtons}>
+                        <Button className={[css.c_button, css.orange].join(' ')} validation={true} onClick={() => {
+                            fetch(`${serverUrl}/api/conversations/delete`, {
+                                method: 'post',
+                                body: JSON.stringify({
+                                    conversationId: conversationId
+                                }),
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            }).then();
+                        }}>
+                            <img className={css.icon} src={`${serverUrl}/icons/delete.png`} alt=""/>
+                        </Button>
+                    </div>
+                    <div className={css.rightSideButtons}>
+                        <Button
+                            onClick={() => setOpenedConv(!openedConv)}
+                            className={[css.c_button, openedConv?css.c_buttonOpened:''].join(' ')}
+                            validation={true}
+                        >
+                            <img className={[css.icon, openedConv?css.i_opened:''].join(' ')} src={`${serverUrl}/icons/open.png`} alt=""/>
+                        </Button>
+                    </div>
+                </div>
                 <ConversationBlock
                     conversations={{
                         conversations: Conversations.list,

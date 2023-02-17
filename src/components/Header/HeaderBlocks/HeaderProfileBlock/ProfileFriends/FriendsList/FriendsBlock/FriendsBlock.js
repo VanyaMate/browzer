@@ -66,7 +66,9 @@ const FriendsBlock = observer(({ list, add }) => {
                                         sessionId: userData.user.sessionId
                                     }).then()
                                 }}
-                            >Сбщ</Button>
+                            >
+                                <img className={css.resultAddIcon} src={`${serverUrl}/icons/chat.png`} alt=""/>
+                            </Button>
                             {
                                 add ?
                                     <Button
@@ -79,7 +81,9 @@ const FriendsBlock = observer(({ list, add }) => {
                                                 addLogin: data.login
                                             }).then();
                                         }}
-                                    >Дрз</Button> : ''
+                                    >
+                                        <img className={css.resultAddIcon} src={`${serverUrl}/icons/add.png`} alt=""/>
+                                    </Button> : ''
                             }
                             <Button
                                 className={css.button}
@@ -91,7 +95,9 @@ const FriendsBlock = observer(({ list, add }) => {
                                         removeLogin: data.login
                                     }).then()
                                 }}
-                            >Уда</Button>
+                            >
+                                <img className={css.resultAddIcon} src={`${serverUrl}/icons/delete.png`} alt=""/>
+                            </Button>
                         </div>
                     </Item>
                 )

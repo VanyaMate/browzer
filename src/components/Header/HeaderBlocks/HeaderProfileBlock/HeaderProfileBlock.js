@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
 import {UserData} from "../../../../App";
-import {sessionStorageUserData} from "../../../../utils/conts";
+import {serverUrl, sessionStorageUserData} from "../../../../utils/conts";
 import Button from "../../../UI/Button/Button";
 import css from './HeaderProfileBlock.module.scss';
 import ProfileFriends from "./ProfileFriends/ProfileFriends";
@@ -17,14 +17,22 @@ const HeaderProfileBlock = () => {
 
     return (
         <div className={css.block}>
-            <ProfileFriends/>
-            <div className={css.userLogin}>
-                {userData.user.userData.login}
+            <div className={css.menu}>
+                <ProfileFriends/>
+                <ProfileFriends/>
+                <ProfileFriends/>
             </div>
-            <div className={css.userIcon}>
-                <img src={userData.user.userData.avatar}/>
+            <div className={css.profile}>
+                <div className={css.userLogin}>
+                    {userData.user.userData.login}
+                </div>
+                <div className={css.userIcon}>
+                    <img src={userData.user.userData.avatar}/>
+                </div>
+                <Button className={css.exitButton} validation={validation} onClick={signOut}>
+                    <img className={css.icon} src={`${serverUrl}/icons/exit.png`} alt=""/>
+                </Button>
             </div>
-            <Button validation={validation} onClick={signOut}>Выйти</Button>
         </div>
     );
 };

@@ -81,6 +81,7 @@ const UsersSearch = ({ query }) => {
                         </div>
                         <div className={css.resultControl}>
                             <Button
+                                className={css.resultButton}
                                 validation={result.preference.conversations === 'all'}
                                 onClick={() => {
                                     createConversationWith({
@@ -90,8 +91,11 @@ const UsersSearch = ({ query }) => {
                                         sessionId: userData.user.sessionId
                                     }).then();
                                 }}
-                            >Соо</Button>
+                            >
+                                <img className={css.resultAddIcon} src={`${serverUrl}/icons/chat.png`} alt=""/>
+                            </Button>
                             <Button
+                                className={css.resultButton}
                                 validation={result.preference.friends === 'all'}
                                 onClick={() => {
                                     requestFriendWith({
@@ -100,7 +104,9 @@ const UsersSearch = ({ query }) => {
                                         addLogin: result.login
                                     }).then();
                                 }}
-                            >Дрз</Button>
+                            >
+                                <img className={css.resultAddIcon} src={`${serverUrl}/icons/add.png`} alt=""/>
+                            </Button>
                         </div>
                     </Item>) : 'No find'
             }

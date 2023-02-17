@@ -7,7 +7,7 @@ const ShowedOptions = ({ active, option, activeOptionCallback, closeOptionCallba
         <div
             className={[css.selectButton, active.activeOption === option ? css.active : ''].join(' ')}
             onClick={() => {
-                activeOptionCallback(option);
+                active.activeOption !== option && activeOptionCallback(option);
             }}
         >
             {option.name}

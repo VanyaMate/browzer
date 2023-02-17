@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import css from './HeaderSearchBlock.module.scss';
 import queryComponents from './queriesComponents';
+import {serverUrl} from "../../../../utils/conts";
 
 const HeaderSearchBlock = () => {
     const [searchTypeList, setSearchTypeList] = useState(queryComponents);
@@ -62,7 +63,9 @@ const HeaderSearchBlock = () => {
             <div className={css.searchInput}>
                 <input type={'text'} placeholder={'Поиск'} value={searchQuery} onInput={inputHandler}/>
             </div>
-            <div className={css.searchButton} onClick={toggleResultList}>?</div>
+            <div className={css.searchButton} onClick={toggleResultList}>
+                <img className={[css.icon, resultOpened?css.i_opened:''].join(' ')} src={`${serverUrl}/icons/open.png`} alt=""/>
+            </div>
             <div className={[css.searchResult, resultOpened?css.r_opened:''].join(' ')}>
                 {
                     searchTypeList.filter((queryItem) =>

@@ -3,12 +3,53 @@
 
 .block {
     display: flex;
-    justify-content: right;
+    justify-content: space-between;
     align-items: center;
     position: relative;
 
-    & > * {
-        margin-right: $commonMargin;
+    & .menu {
+        height: 100%;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+    }
+
+    & .exitButton {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        background: $darkGray;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: .1s;
+
+        &:hover {
+            background: $orange;
+
+            & .icon {
+                filter: invert(1);
+            }
+        }
+    }
+
+    & .profile {
+        height: 100%;
+        display: flex;
+        justify-content: right;
+        align-items: center;
+        position: relative;
+
+        & .icon {
+            width: 20px;
+            height: 20px;
+            filter: invert(.4);
+            transition: .1s;
+        }
+    }
+
+    & > * > * {
+        margin-right: calc(#{$commonMargin} / 2);
 
         &:last-child {
             margin-right: 0;

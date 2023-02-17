@@ -1,3 +1,8 @@
+@import "../../../../../../../utils/colors";
+@import "../../../../../../../utils/sizes";
+
+$scrollWidth: 4;
+
 .container {
     min-height: 20px;
     max-height: 210px;
@@ -7,6 +12,23 @@
     overflow: auto;
     margin-bottom: 10px;
     font-size: 14px;
+
+    position: relative;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        width: #{$scrollWidth}px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $darkGray;
+        border-radius: calc(#{$scrollWidth}px / 2);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $blue;
+        border-radius: calc(#{$scrollWidth}px / 2);
+    }
 
     & .item {
         display: flex;
@@ -33,10 +55,34 @@
 
     & .controlButtons {
         height: 30px;
+        display: flex;
 
         & .button {
-            height: 100%;
             margin-left: 5px;
+            width: 30px;
+            height: 30px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            transition: .1s;
+            border-radius: 50%;
+
+            &:hover {
+                background: $darkGray;
+
+                & .resultAddIcon {
+                    filter: invert(1);
+                }
+            }
+        }
+
+        .resultAddIcon {
+            width: 20px;
+            height: 20px;
+            filter: invert(.8);
+            transition: .1s;
         }
     }
 }

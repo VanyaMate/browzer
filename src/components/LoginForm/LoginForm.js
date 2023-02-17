@@ -5,6 +5,7 @@ import Button from "../UI/Button/Button";
 import {checkLogin, checkPassword} from "../../utils/Checker";
 import {UserData} from "../../App";
 import {serverUrl, sessionStorageUserData} from "../../utils/conts";
+import Friends from "../../store/Friends";
 
 const LoginForm = ({ socket }) => {
     const userData = useContext(UserData);
@@ -66,6 +67,10 @@ const LoginForm = ({ socket }) => {
                         login: bodyData.data.userData.login
                     })
                 }, 10000);
+
+                Friends.list = bodyData.data.userData.friends;
+                Friends.inList = bodyData.data.userData.friendsInRequests;
+                Friends.outList = bodyData.data.userData.friendsOutRequests;
 
                 return;
             }
